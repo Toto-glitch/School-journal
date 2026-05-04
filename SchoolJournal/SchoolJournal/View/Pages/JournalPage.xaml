@@ -1,0 +1,63 @@
+﻿<Page x:Class="SchoolJournal.View.Pages.JournalPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="JournalPage" Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#F8F9FA" Padding="15" CornerRadius="10" Margin="0,0,0,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Предмет:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>
+                <ComboBox x:Name="SubjectCombo" Grid.Column="1" Padding="5"/>
+
+                <TextBlock Text="Класс/Группа:" Grid.Column="2" VerticalAlignment="Center" Margin="15,0,10,0" FontWeight="SemiBold"/>
+                <ComboBox x:Name="GroupCombo" Grid.Column="3" Padding="5"/>
+
+                <Button Grid.Column="4" Content="🔄 Обновить журнал" HorizontalAlignment="Right" 
+                        Style="{StaticResource PrimaryButton}" Padding="15,8" Click="RefreshJournal_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- Таблица журнала -->
+        <Border Grid.Row="1" Background="White" Effect="{StaticResource CardShadow}" CornerRadius="10" Padding="10">
+            <DataGrid x:Name="JournalDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" 
+                      IsReadOnly="True" RowHeight="40"
+                      Background="White" BorderThickness="0"
+                      MouseDoubleClick="JournalDataGrid_MouseDoubleClick">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#4A90D9"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="10,5"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Ученик" Binding="{Binding StudentName}" Width="*" />
+                    <DataGridTextColumn Header="Средний балл" Binding="{Binding Average}" Width="100" />
+                    <DataGridTextColumn Header="Количество оценок" Binding="{Binding MarkCount}" Width="120" />
+                    <DataGridTemplateColumn Header="Действия" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="📝 Поставить" Style="{StaticResource SecondaryButton}" 
+                                        Padding="5,2" FontSize="11"
+                                        Click="SetMark_Click"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</Page>

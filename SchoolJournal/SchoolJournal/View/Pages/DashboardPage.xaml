@@ -1,0 +1,130 @@
+﻿<Page x:Class="SchoolJournal.View.Pages.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="DashboardPage" Background="Transparent">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,25">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="#4A90D9" CornerRadius="12" 
+                        Padding="20" Margin="8" Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <TextBlock Text="👨‍🎓" FontSize="36" Margin="0,0,0,12"/>
+                        <TextBlock x:Name="StudentsCount" Text="10" FontSize="32" FontWeight="Bold" 
+                                   Foreground="White"/>
+                        <TextBlock Text="Учеников" Foreground="White" 
+                                   Opacity="0.9" FontSize="15"/>
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Column="1" Background="#5CB85C" CornerRadius="12" 
+                        Padding="20" Margin="8" Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <TextBlock Text="👨‍🏫" FontSize="36" Margin="0,0,0,12"/>
+                        <TextBlock x:Name="TeachersCount" Text="5" FontSize="32" FontWeight="Bold" 
+                                   Foreground="White"/>
+                        <TextBlock Text="Учителей" Foreground="White" 
+                                   Opacity="0.9" FontSize="15"/>
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Column="2" Background="#F0AD4E" CornerRadius="12" 
+                        Padding="20" Margin="8" Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <TextBlock Text="⭐" FontSize="36" Margin="0,0,0,12"/>
+                        <TextBlock x:Name="MarksCount" Text="50" FontSize="32" FontWeight="Bold" 
+                                   Foreground="White"/>
+                        <TextBlock Text="Оценок" Foreground="White" 
+                                   Opacity="0.9" FontSize="15"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="3" Background="#9B59B6" CornerRadius="12" 
+                        Padding="20" Margin="8" Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <TextBlock Text="👪" FontSize="36" Margin="0,0,0,12"/>
+                        <TextBlock x:Name="ParentsCount" Text="10" FontSize="32" FontWeight="Bold" 
+                                   Foreground="White"/>
+                        <TextBlock Text="Родителей" Foreground="White" 
+                                   Opacity="0.9" FontSize="15"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="1" Background="#F8F9FA" CornerRadius="12" 
+                    Padding="25" Margin="0,0,0,25">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="⚡ Быстрые действия" 
+                               FontSize="22" FontWeight="Bold" Margin="0,0,0,20"
+                               Foreground="#333333"/>
+
+                    <WrapPanel Grid.Row="1">
+                        <Button Content="➕ Выставить оценку" 
+                                Style="{StaticResource PrimaryButton}" 
+                                Margin="5" Padding="20,12" FontSize="14"
+                                Click="AddMark_Click"/>
+                        <Button Content="📝 Новая запись" 
+                                Style="{StaticResource SecondaryButton}" 
+                                Margin="5" Padding="20,12" FontSize="14"/>
+                        <Button Content="📊 Отчет" 
+                                Style="{StaticResource SecondaryButton}" 
+                                Margin="5" Padding="20,12" FontSize="14"/>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="2" Background="#F8F9FA" CornerRadius="12" 
+                    Padding="25">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="📋 Последние оценки" 
+                               FontSize="22" FontWeight="Bold" Margin="0,0,0,20"
+                               Foreground="#333333"/>
+
+                    <DataGrid x:Name="RecentMarksGrid" Grid.Row="1" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              Background="White" BorderThickness="0"
+                              RowHeight="45" IsReadOnly="True"
+                              HeadersVisibility="Column">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#4A90D9"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Padding" Value="10,8"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Ученик" Binding="{Binding StudentName}" Width="*"/>
+                            <DataGridTextColumn Header="Предмет" Binding="{Binding Subject}" Width="*"/>
+                            <DataGridTextColumn Header="Оценка" Binding="{Binding Grade}" Width="80"/>
+                            <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:dd.MM.yyyy}}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Page>

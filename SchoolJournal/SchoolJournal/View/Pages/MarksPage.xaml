@@ -1,0 +1,38 @@
+﻿<Page x:Class="SchoolJournal.View.Pages.MarksPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="MarksPage" Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" Content="➕ Выставить оценку" HorizontalAlignment="Right"
+                Style="{StaticResource PrimaryButton}" Margin="0,0,0,15"
+                Click="AddMark_Click"/>
+
+        <Border Grid.Row="1" Background="White" Effect="{StaticResource CardShadow}" 
+                CornerRadius="10" Padding="10">
+            <DataGrid x:Name="DataGridList" AutoGenerateColumns="False" CanUserAddRows="False"
+                      IsReadOnly="True" Background="White" BorderThickness="0" RowHeight="40">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#4A90D9"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="10,5"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Ученик" Binding="{Binding StudentName}" Width="*"/>
+                    <DataGridTextColumn Header="Предмет" Binding="{Binding SubjectName}" Width="*"/>
+                    <DataGridTextColumn Header="Оценка" Binding="{Binding Value}" Width="80"/>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding DateTime, StringFormat={}{0:dd.MM.yyyy}}" Width="120"/>
+                    <DataGridTextColumn Header="Учитель" Binding="{Binding TeacherName}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</Page>
