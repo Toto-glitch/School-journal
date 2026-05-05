@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SchoolJournal.Models
+namespace SchoolJournal.Model
 {
     public class Group
     {

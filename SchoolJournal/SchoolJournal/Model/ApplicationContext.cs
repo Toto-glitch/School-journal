@@ -1,5 +1,4 @@
-﻿using SchoolJournal.Models;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 
 namespace SchoolJournal.Model
 {

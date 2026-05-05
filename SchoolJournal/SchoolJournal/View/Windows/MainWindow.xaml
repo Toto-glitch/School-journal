@@ -109,56 +109,56 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButton}" Click="Journal_Click">
+                        <Button x:Name="JournalButton" Style="{StaticResource NavButton}" Click="Journal_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📖 " FontSize="18"/>
                                 <TextBlock Text="Журнал" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButton}" Click="Diary_Click">
+                        <Button x:Name="DiaryButton" Style="{StaticResource NavButton}" Click="Diary_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📝 " FontSize="18"/>
                                 <TextBlock Text="Дневник" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButton}" Click="Students_Click">
+                        <Button x:Name="StudentsButton" Style="{StaticResource NavButton}" Click="Students_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="👨‍🎓 " FontSize="18"/>
                                 <TextBlock Text="Ученики" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButton}" Click="Teachers_Click">
+                        <Button x:Name="TeachersButton" Style="{StaticResource NavButton}" Click="Teachers_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="👨‍🏫 " FontSize="18"/>
                                 <TextBlock Text="Учителя" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButton}" Click="Subjects_Click">
+                        <Button x:Name="SubjectsButton" Style="{StaticResource NavButton}" Click="Subjects_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📚 " FontSize="18"/>
                                 <TextBlock Text="Предметы" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButton}" Click="Parents_Click">
+                        <Button x:Name="ParentsButton" Style="{StaticResource NavButton}" Click="Parents_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="👪 " FontSize="18"/>
                                 <TextBlock Text="Родители" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButton}" Click="Marks_Click">
+                        <Button x:Name="MarksButton" Style="{StaticResource NavButton}" Click="Marks_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="⭐ " FontSize="18"/>
                                 <TextBlock Text="Оценки" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButton}" Click="Reports_Click">
+                        <Button x:Name="ReportsButton" Style="{StaticResource NavButton}" Click="Reports_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📈 " FontSize="18"/>
                                 <TextBlock Text="Отчеты" VerticalAlignment="Center"/>

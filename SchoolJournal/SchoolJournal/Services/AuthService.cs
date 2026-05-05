@@ -7,14 +7,14 @@ namespace SchoolJournal.Services
 {
     public class AuthService
     {
-        public bool Authenticate(string username, string password)
+        public User Authenticate(string username, string password)
         {
             string passwordHash = HashPassword(password);
 
             using (var context = new ApplicationContext())
             {
                 var user = context.Users.FirstOrDefault(u => u.Username == username && u.PasswordHash == passwordHash);
-                return user != null;
+                return user;
             }
         }
 

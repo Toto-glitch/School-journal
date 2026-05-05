@@ -46,11 +46,11 @@ namespace SchoolJournal.ViewModel
                 return;
             }
 
-            bool isAuth = _authService.Authenticate(Username, Password);
+            var user = _authService.Authenticate(Username, Password);
 
-            if (isAuth)
+            if (user != null)
             {
-                var mainWin = new MainWindow();
+                var mainWin = new MainWindow(user);
                 mainWin.Show();
                 _current_window.Close();
             }

@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using SchoolJournal.Model;
 using SchoolJournal.View.Pages;
 
 namespace SchoolJournal
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private User _currentUser;
+
+        public MainWindow(User user)
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
+            _currentUser = user;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
