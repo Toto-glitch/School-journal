@@ -1,37 +1,34 @@
 ﻿<Page x:Class="SchoolJournal.View.Pages.DiaryPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="DiaryPage" Background="Transparent">
-
-    <Grid>
+      Background="#F4F6F9">
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="#E3F2FD" Padding="15" CornerRadius="10" Margin="0,0,0,15">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Text="{Binding StudentFullName}" 
+                   FontSize="18" FontWeight="SemiBold" Foreground="#2C3E50" Margin="0,0,0,15"/>
 
-                <TextBlock Text="Выберите ученика:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
-                <ComboBox x:Name="StudentCombo" Grid.Column="1" Padding="5"/>
-            </Grid>
-        </Border>
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Marks}" 
+                  AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                  Margin="0,0,0,15" Background="White" BorderBrush="#D1D5DB">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}" Width="100"/>
+                <DataGridTextColumn Header="Предмет" Binding="{Binding Subject}" Width="200"/>
+                <DataGridTextColumn Header="Оценка" Binding="{Binding Value}" Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
 
-        <Border Grid.Row="1" Background="White" Effect="{StaticResource CardShadow}" CornerRadius="10" Padding="10">
-            <DataGrid x:Name="DiaryDataGrid" AutoGenerateColumns="False" IsReadOnly="True" 
-                      Background="White" BorderThickness="0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:dd.MM.yyyy}}" Width="100"/>
-                    <DataGridTextColumn Header="Предмет" Binding="{Binding Subject.Name}" Width="*"/>
-                    <DataGridTextColumn Header="Оценка" Binding="{Binding Value}" Width="80"/>
-                    <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}" Width="*"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Averages}" 
+                  AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                  Background="White" BorderBrush="#D1D5DB">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Предмет" Binding="{Binding Subject}" Width="200"/>
+                <DataGridTextColumn Header="Средний балл" Binding="{Binding Avg}" Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Page>

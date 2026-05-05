@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace SchoolJournal.Helper
+namespace SchoolJournal.Service
 {
     public class RelayCommand : ICommand
     {

@@ -36,7 +36,7 @@ namespace SchoolJournal
             NavigateToPage(sender, e, new JournalPage(), "Классный журнал");
 
         private void Diary_Click(object sender, RoutedEventArgs e) =>
-            NavigateToPage(sender, e, new DiaryPage(), "Дневник ученика");
+            NavigateToPage(sender, e, new DiaryPage(_currentUser), "Дневник ученика");
 
         private void Students_Click(object sender, RoutedEventArgs e) =>
             NavigateToPage(sender, e, new StudentsPage(), "Список учеников");
