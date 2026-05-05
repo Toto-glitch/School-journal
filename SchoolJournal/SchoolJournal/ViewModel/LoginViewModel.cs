@@ -1,15 +1,21 @@
 ﻿using SchoolJournal.Helper;
+using SchoolJournal.Services;
 using System.Windows;
 
 namespace SchoolJournal.ViewModel
 {
     public class LoginViewModel : BaseViewModel
     {
+        private AuthService _authService;
+
         private string _username;
         private string _password;
         private string _errorMessage;
 
-        public LoginViewModel(Window win) : base(win) { }
+        public LoginViewModel(Window win) : base(win)
+        {
+            _authService = new AuthService();
+        }
 
         public string Username
         {
@@ -26,11 +32,11 @@ namespace SchoolJournal.ViewModel
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(nameof(_errorMessage)); }
+            set { _errorMessage = value; OnPropertyChanged(nameof(ErrorMessage)); }
         }
 
         private RelayCommand _loginCommand;
-        public RelayCommand LoginCommand => _loginCommand ?? (new RelayCommand(_ => Login()));
+        public RelayCommand LoginCommand => _loginCommand ?? (_loginCommand = new RelayCommand(obj => Login()));
 
         private void Login()
         {
@@ -40,9 +46,18 @@ namespace SchoolJournal.ViewModel
                 return;
             }
 
-            var mainWindow = new MainWindow();
-            mainWindow.Show();
-            _current_window.Close();
+            bool isAuth = _authService.Authenticate(Username, Password);
+
+            if (isAuth)
+            {
+                var mainWin = new MainWindow();
+                mainWin.Show();
+                _current_window.Close();
+            }
+            else
+            {
+                ErrorMessage = "Неверный логин или пароль!";
+            }
         }
     }
 }
