@@ -18,7 +18,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Выберите ученика:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
-                <ComboBox x:Name="StudentCombo" Grid.Column="1" Padding="5" SelectionChanged="StudentCombo_SelectionChanged"/>
+                <ComboBox x:Name="StudentCombo" Grid.Column="1" Padding="5"/>
             </Grid>
         </Border>
 

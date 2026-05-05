@@ -79,8 +79,7 @@
                     <WrapPanel Grid.Row="1">
                         <Button Content="➕ Выставить оценку" 
                                 Style="{StaticResource PrimaryButton}" 
-                                Margin="5" Padding="20,12" FontSize="14"
-                                Click="AddMark_Click"/>
+                                Margin="5" Padding="20,12" FontSize="14"/>
                         <Button Content="📝 Новая запись" 
                                 Style="{StaticResource SecondaryButton}" 
                                 Margin="5" Padding="20,12" FontSize="14"/>

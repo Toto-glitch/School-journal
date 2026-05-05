@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using SchoolJournal.Model;
+using System.Windows;
 
 namespace SchoolJournal
 {
@@ -10,6 +11,11 @@ namespace SchoolJournal
 
             var loginWindow = new LoginWindow();
             loginWindow.Show();
+
+            using (var context = new ApplicationContext())
+            {
+                context.Database.Initialize(false);
+            }
         }
     }
 }

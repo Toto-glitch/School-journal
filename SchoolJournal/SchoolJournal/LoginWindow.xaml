@@ -38,7 +38,7 @@
 
                 <Button x:Name="LoginButton" Content="Войти в систему" Height="50" 
                         Style="{StaticResource PrimaryButton}" 
-                        Click="LoginButton_Click" Margin="0,15,0,0" FontSize="16"/>
+                        Margin="0,15,0,0" FontSize="16"/>
 
                 <TextBlock x:Name="ErrorMessage" Text="" Foreground="#D9534F" 
            FontSize="13" Margin="0,15,0,0" Visibility="Collapsed" 

@@ -26,7 +26,7 @@
                 <ComboBox x:Name="GroupCombo" Grid.Column="3" Padding="5"/>
 
                 <Button Grid.Column="4" Content="🔄 Обновить журнал" HorizontalAlignment="Right" 
-                        Style="{StaticResource PrimaryButton}" Padding="15,8" Click="RefreshJournal_Click"/>
+                        Style="{StaticResource PrimaryButton}" Padding="15,8"/>
             </Grid>
         </Border>
 
@@ -34,8 +34,7 @@
         <Border Grid.Row="1" Background="White" Effect="{StaticResource CardShadow}" CornerRadius="10" Padding="10">
             <DataGrid x:Name="JournalDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" 
                       IsReadOnly="True" RowHeight="40"
-                      Background="White" BorderThickness="0"
-                      MouseDoubleClick="JournalDataGrid_MouseDoubleClick">
+                      Background="White" BorderThickness="0">
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="Background" Value="#4A90D9"/>
@@ -51,8 +50,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="📝 Поставить" Style="{StaticResource SecondaryButton}" 
-                                        Padding="5,2" FontSize="11"
-                                        Click="SetMark_Click"/>
+                                        Padding="5,2" FontSize="11"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

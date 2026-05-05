@@ -1,22 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace SchoolJournal.Model
+namespace SchoolJournal.Models
 {
     public enum UserRole
     {
-        Director = 1,
-        Teacher = 2,
-        Parent = 3,
-        Student = 4
+        Director,
+        Teacher,
+        Parent,
+        Student
     }
 
     public class User
     {
+        [Key]
         public int Id { get; set; }
-        public string UserName { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string Username { get; set; }
+
+        [Required]
+        [MaxLength(255)]
         public string PasswordHash { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [Required]
+        [MaxLength(20)]
+        public string PhoneNumber { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string Email { get; set; }
+
+        [Required]
         public UserRole Role { get; set; }
 
         public virtual ICollection<MarkLog> MarkLogs { get; set; } = new List<MarkLog>();

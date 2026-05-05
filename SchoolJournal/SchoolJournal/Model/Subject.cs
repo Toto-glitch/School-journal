@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace SchoolJournal.Model
+namespace SchoolJournal.Models
 {
     public class Subject
     {
+        [Key]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public int Hours { get; set; } = 0; 
-        public string Description { get; set; } 
+
+        [Required]
+        [MaxLength(255)]
+        public string Title { get; set; }
 
         public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
-        public virtual ICollection<Mark> Marks { get; set; } = new List<Mark>();
+        public virtual ICollection<Group> Classes { get; set; } = new List<Group>();
     }
 }
