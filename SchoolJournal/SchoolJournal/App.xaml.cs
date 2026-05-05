@@ -1,5 +1,4 @@
-﻿using SchoolJournal.Model;
-using System.Windows;
+﻿using System.Windows;
 
 namespace SchoolJournal
 {
@@ -8,14 +7,6 @@ namespace SchoolJournal
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
-            var loginWindow = new LoginWindow();
-            loginWindow.Show();
-
-            using (var context = new ApplicationContext())
-            {
-                context.Database.Initialize(false);
-            }
         }
     }
 }
