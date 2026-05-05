@@ -183,6 +183,10 @@
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\GradeService.cs" />
     <Compile Include="Services\ReportService.cs" />
+    <Compile Include="ViewModel\DashboardViewModel.cs" />
+    <Compile Include="ViewModel\LoginViewModel.cs" />
+    <Compile Include="ViewModel\RelayCommand.cs" />
+    <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\Pages\DashboardPage.xaml.cs">
       <DependentUpon>DashboardPage.xaml</DependentUpon>
     </Compile>
