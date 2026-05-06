@@ -113,9 +113,10 @@ namespace SchoolJournal.ViewModel
                     StudentsVisibility = Visibility.Visible;
                     break;
                 case UserRole.Director:
-                    DashboardVisibility = Visibility.Visible;
-                    DiaryVisibility = Visibility.Visible;
-                    JournalVisibility = Visibility.Visible;
+                    DashboardVisibility = Visibility.Collapsed;
+                    DiaryVisibility = Visibility.Collapsed;
+                    JournalVisibility = Visibility.Collapsed;
+
                     StudentsVisibility = Visibility.Visible;
                     TeachersVisibility = Visibility.Visible;
                     SubjectsVisibility = Visibility.Visible;

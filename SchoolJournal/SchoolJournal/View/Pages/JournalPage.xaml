@@ -29,7 +29,7 @@
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
 
@@ -46,7 +46,7 @@
                     </DataGrid>
 
                     <!-- Панель добавления/изменения оценки -->
-                    <StackPanel Grid.Column="1" Width="80" Margin="10,0" VerticalAlignment="Top">
+                    <StackPanel Grid.Column="1" Width="150" Margin="10,0" VerticalAlignment="Top">
                         <TextBlock Text="Оценка:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <ComboBox SelectedIndex="{Binding SelectedMarkValue, Converter={StaticResource IntToIndexConverter}}"
                                   Height="28" Width="60" Margin="0,0,0,10">

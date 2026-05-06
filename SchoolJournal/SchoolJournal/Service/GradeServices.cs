@@ -240,7 +240,9 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
-                return context.Groups.ToList();
+                return context.Groups
+                    .Include(g => g.Students)
+                    .ToList();
             }
         }
 

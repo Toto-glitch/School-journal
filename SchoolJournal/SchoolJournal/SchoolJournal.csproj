@@ -208,15 +208,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Pages\MarksPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Pages\ParentsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Pages\ReportsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -254,14 +246,8 @@
     <Compile Include="View\Pages\JournalPage.xaml.cs">
       <DependentUpon>JournalPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Pages\MarksPage.xaml.cs">
-      <DependentUpon>MarksPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Pages\ParentsPage.xaml.cs">
       <DependentUpon>ParentsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Pages\ReportsPage.xaml.cs">
-      <DependentUpon>ReportsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Pages\StudentsPage.xaml.cs">
       <DependentUpon>StudentsPage.xaml</DependentUpon>
