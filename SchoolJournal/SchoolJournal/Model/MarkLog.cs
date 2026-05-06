@@ -13,8 +13,8 @@ namespace SchoolJournal.Model
         [ForeignKey("MarkId")]
         public virtual Mark Mark { get; set; }
 
-        public int OldValue { get; set; }
-        public int NewValue { get; set; }
+        public int? OldValue { get; set; }
+        public int? NewValue { get; set; }
         public DateTime ChangeDate { get; set; }
 
         public int UserId { get; set; }

@@ -1,56 +1,14 @@
 ﻿<Page x:Class="SchoolJournal.View.Pages.ReportsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="ReportsPage" Background="Transparent">
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:SchoolJournal.View.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ReportsPage">
 
-    <StackPanel>
-        <Border Background="White" Effect="{StaticResource CardShadow}" CornerRadius="10" Padding="20" Margin="0,0,0,20">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text=" Топ-3 лучших ученика (по среднему баллу)" 
-                               FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
-                    <DataGrid x:Name="TopStudentsGrid" AutoGenerateColumns="False" Height="150" 
-                              Background="White" BorderThickness="0" IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Место" Binding="{Binding Rank}" Width="60"/>
-                            <DataGridTextColumn Header="ФИО" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="Средний балл" Binding="{Binding Average, StringFormat=N2}" Width="120"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </StackPanel>
-
-                <Button Grid.Column="1" Content="📊 Обновить рейтинг" 
-                        Style="{StaticResource PrimaryButton}" VerticalAlignment="Center"/>
-            </Grid>
-        </Border>
-
-        <Border Background="White" Effect="{StaticResource CardShadow}" CornerRadius="10" Padding="20">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text=" Средний балл по предмету" 
-                               FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
-                    <DataGrid x:Name="SubjectAverageGrid" AutoGenerateColumns="False" Height="150" 
-                              Background="White" BorderThickness="0" IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Предмет" Binding="{Binding SubjectName}" Width="*"/>
-                            <DataGridTextColumn Header="Средний балл" Binding="{Binding Average, StringFormat=N2}" Width="120"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </StackPanel>
-
-                <Button Grid.Column="1" Content="📈 Рассчитать" 
-                        Style="{StaticResource SecondaryButton}" VerticalAlignment="Center"/>
-            </Grid>
-        </Border>
-    </StackPanel>
+    <Grid>
+        
+    </Grid>
 </Page>

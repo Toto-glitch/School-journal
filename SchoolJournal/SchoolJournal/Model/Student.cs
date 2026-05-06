@@ -23,5 +23,8 @@ namespace SchoolJournal.Model
 
         public virtual ICollection<Parent> Parents { get; set; } = new List<Parent>();
         public virtual ICollection<Mark> Marks { get; set; } = new List<Mark>();
+
+        [NotMapped]
+        public string FullName => $"{LastName} {FirstName}";
     }
 }
