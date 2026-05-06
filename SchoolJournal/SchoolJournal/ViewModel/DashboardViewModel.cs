@@ -10,7 +10,7 @@ namespace SchoolJournal.ViewModel
     public class DashboardViewModel : BaseViewModel
     {
         private readonly AuthService _authService;
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private readonly User _currentUser;
 
         private string _welcomeMessage;
@@ -19,18 +19,18 @@ namespace SchoolJournal.ViewModel
         private double _studentAverageMark;
         private ObservableCollection<Mark> _recentMarks;
         private ObservableCollection<Subject> _teacherSubjects;
-        private ObservableCollection<SubjectAverage> _subjectAverages;   // новое
+        private ObservableCollection<SubjectAverage> _subjectAverages;   
 
         public DashboardViewModel(Window win, User user) : base(win)
         {
             _authService = new AuthService();
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             _currentUser = user;
 
             Children = new ObservableCollection<Student>();
             RecentMarks = new ObservableCollection<Mark>();
             TeacherSubjects = new ObservableCollection<Subject>();
-            SubjectAverages = new ObservableCollection<SubjectAverage>(); // инициализация
+            SubjectAverages = new ObservableCollection<SubjectAverage>();
 
             LoadDashboardData();
         }
@@ -86,7 +86,7 @@ namespace SchoolJournal.ViewModel
         public bool IsParent => _currentUser.Role == UserRole.Parent;
         public bool IsStudent => _currentUser.Role == UserRole.Student;
         public bool IsTeacher => _currentUser.Role == UserRole.Teacher;
-        public bool IsStudentOrParent => IsStudent || IsParent;   // для показа блоков
+        public bool IsStudentOrParent => IsStudent || IsParent;
 
         private void LoadDashboardData()
         {
@@ -124,16 +124,13 @@ namespace SchoolJournal.ViewModel
 
         private void LoadStudentDashboard(int studentId)
         {
-            // Последние 10 оценок
-            var marks = _gradeService.GetStudentMarks(studentId);
+            var marks = _absoluteService.GetStudentMarks(studentId);
             RecentMarks.Clear();
             foreach (var m in marks.Take(10))
                 RecentMarks.Add(m);
 
-            // Общий средний балл
-            StudentAverageMark = _gradeService.GetOverallAverageMark(studentId);
+            StudentAverageMark = _absoluteService.GetOverallAverageMark(studentId);
 
-            // Средние баллы по предметам
             var subjectAvgs = marks
                 .GroupBy(m => m.Subject)
                 .Select(g => new SubjectAverage

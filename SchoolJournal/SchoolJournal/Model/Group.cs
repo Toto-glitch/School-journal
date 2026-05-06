@@ -1,5 +1,4 @@
-﻿using SchoolJournal.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchoolJournal.Model

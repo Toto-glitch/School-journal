@@ -9,7 +9,7 @@ namespace SchoolJournal.ViewModel
     public class DiaryViewModel : BaseViewModel
     {
         private readonly AuthService _authService;
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private readonly User _currentUser;
 
         private ObservableCollection<Student> _children;
@@ -23,7 +23,7 @@ namespace SchoolJournal.ViewModel
         public DiaryViewModel(Window win, User user) : base(win)
         {
             _authService = new AuthService();
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             _currentUser = user;
 
             Children = new ObservableCollection<Student>();
@@ -121,15 +121,13 @@ namespace SchoolJournal.ViewModel
             Subjects.Clear();
             Marks.Clear();
 
-            // Загружаем ВСЕ предметы школы
-            var allSubjects = _gradeService.GetAllSubjects();
+            var allSubjects = _absoluteService.GetAllSubjects();
             foreach (var subj in allSubjects)
             {
                 Subjects.Add(subj);
             }
 
-            // Вычисляем средний балл и статус (ВНЕ цикла!)
-            AverageMark = _gradeService.GetOverallAverageMark(SelectedChild.Id);
+            AverageMark = _absoluteService.GetOverallAverageMark(SelectedChild.Id);
             StatusMessage = $"Ученик: {SelectedChild.LastName} {SelectedChild.FirstName} | Группа: {SelectedChild.Group?.Title ?? "Не назначена"}";
         }
 
@@ -138,11 +136,11 @@ namespace SchoolJournal.ViewModel
             if (SelectedChild == null || SelectedSubject == null) return;
 
             Marks.Clear();
-            var marks = _gradeService.GetStudentMarksBySubject(SelectedChild.Id, SelectedSubject.Id);
+            var marks = _absoluteService.GetStudentMarksBySubject(SelectedChild.Id, SelectedSubject.Id);
             foreach (var m in marks)
                 Marks.Add(m);
 
-            AverageMark = _gradeService.GetAverageMarkBySubject(SelectedChild.Id, SelectedSubject.Id);
+            AverageMark = _absoluteService.GetAverageMarkBySubject(SelectedChild.Id, SelectedSubject.Id);
         }
     }
 }

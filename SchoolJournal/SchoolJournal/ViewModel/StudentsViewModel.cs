@@ -7,12 +7,12 @@ namespace SchoolJournal.ViewModel
 {
     public class StudentsViewModel : BaseViewModel
     {
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private ObservableCollection<Student> _students;
 
         public StudentsViewModel(Window win, User user) : base(win)
         {
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             Students = new ObservableCollection<Student>();
             LoadStudents();
         }
@@ -25,7 +25,7 @@ namespace SchoolJournal.ViewModel
 
         private void LoadStudents()
         {
-            var all = _gradeService.GetAllStudents();
+            var all = _absoluteService.GetAllStudents();
             Students.Clear();
             foreach (var s in all)
                 Students.Add(s);

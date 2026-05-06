@@ -104,25 +104,25 @@ namespace SchoolJournal.Model
             student4.Parents.Add(parent4);
 
             // 8. Связи Teacher-Subject
-            context.Teachers.Find(1).Subjects.Add(context.Subjects.Find(1)); // Иванов - Математика
-            context.Teachers.Find(1).Subjects.Add(context.Subjects.Find(5)); // Иванов - Информатика
-            context.Teachers.Find(2).Subjects.Add(context.Subjects.Find(2)); // Петрова - Русский язык
-            context.Teachers.Find(2).Subjects.Add(context.Subjects.Find(3)); // Петрова - Литература
-            context.Teachers.Find(3).Subjects.Add(context.Subjects.Find(4)); // Сидоров - Физика
-            context.Teachers.Find(3).Subjects.Add(context.Subjects.Find(1)); // Сидоров - Математика
-            context.Teachers.Find(3).Subjects.Add(context.Subjects.Find(5)); // Сидоров - Информатика
+            context.Teachers.Find(1).Subjects.Add(context.Subjects.Find(1));
+            context.Teachers.Find(1).Subjects.Add(context.Subjects.Find(5));
+            context.Teachers.Find(2).Subjects.Add(context.Subjects.Find(2));
+            context.Teachers.Find(2).Subjects.Add(context.Subjects.Find(3));
+            context.Teachers.Find(3).Subjects.Add(context.Subjects.Find(4));
+            context.Teachers.Find(3).Subjects.Add(context.Subjects.Find(1));
+            context.Teachers.Find(3).Subjects.Add(context.Subjects.Find(5)); 
 
             // 9. Связи Subject-Group (many-to-many)
-            AddSubjectToGroups(context, 1, new[] { 1, 2, 3 });   // Математика
-            AddSubjectToGroups(context, 2, new[] { 1, 2, 3 });   // Русский язык
-            AddSubjectToGroups(context, 3, new[] { 1, 2 });      // Литература
-            AddSubjectToGroups(context, 4, new[] { 1, 2, 3 });   // Физика
-            AddSubjectToGroups(context, 5, new[] { 3 });         // Информатика
-            AddSubjectToGroups(context, 6, new[] { 1, 2 });      // История
-            AddSubjectToGroups(context, 7, new[] { 3 });         // Биология
-            AddSubjectToGroups(context, 8, new[] { 3 });         // Химия
-            AddSubjectToGroups(context, 9, new[] { 1, 2, 3 });   // Английский
-            AddSubjectToGroups(context, 10, new[] { 1, 2, 3 });  // Физкультура
+            AddSubjectToGroups(context, 1, new[] { 1, 2, 3 });
+            AddSubjectToGroups(context, 2, new[] { 1, 2, 3 });
+            AddSubjectToGroups(context, 3, new[] { 1, 2 });
+            AddSubjectToGroups(context, 4, new[] { 1, 2, 3 });
+            AddSubjectToGroups(context, 5, new[] { 3 });
+            AddSubjectToGroups(context, 6, new[] { 1, 2 });
+            AddSubjectToGroups(context, 7, new[] { 3 });
+            AddSubjectToGroups(context, 8, new[] { 3 });
+            AddSubjectToGroups(context, 9, new[] { 1, 2, 3 });
+            AddSubjectToGroups(context, 10, new[] { 1, 2, 3 });
 
             context.SaveChanges();
 

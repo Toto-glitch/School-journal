@@ -8,7 +8,7 @@ namespace SchoolJournal.ViewModel
 {
     public class JournalViewModel : BaseViewModel
     {
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private readonly AuthService _authService;
         private Teacher _currentTeacher;
 
@@ -24,7 +24,7 @@ namespace SchoolJournal.ViewModel
 
         public JournalViewModel(Window win, User user) : base(win)
         {
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             _authService = new AuthService();
 
             _subjects = new ObservableCollection<Subject>();
@@ -110,7 +110,7 @@ namespace SchoolJournal.ViewModel
             _currentTeacher = _authService.GetTeacherByUserId(user.Id);
             if (_currentTeacher != null)
             {
-                var subjects = _gradeService.GetTeacherSubjects(_currentTeacher.Id);
+                var subjects = _absoluteService.GetTeacherSubjects(_currentTeacher.Id);
                 Subjects.Clear();
                 foreach (var s in subjects)
                     Subjects.Add(s);
@@ -129,7 +129,7 @@ namespace SchoolJournal.ViewModel
             Marks.Clear();
             if (_selectedSubject == null) return;
 
-            var students = _gradeService.GetStudentsBySubject(_selectedSubject.Id);
+            var students = _absoluteService.GetStudentsBySubject(_selectedSubject.Id);
             foreach (var s in students.OrderBy(s => s.LastName))
                 Students.Add(s);
         }
@@ -139,7 +139,7 @@ namespace SchoolJournal.ViewModel
             Marks.Clear();
             if (_selectedStudent == null || _selectedSubject == null) return;
 
-            var marks = _gradeService.GetStudentMarksBySubject(_selectedStudent.Id, _selectedSubject.Id);
+            var marks = _absoluteService.GetStudentMarksBySubject(_selectedStudent.Id, _selectedSubject.Id);
             foreach (var m in marks)
                 Marks.Add(m);
         }
@@ -149,12 +149,11 @@ namespace SchoolJournal.ViewModel
             Logs.Clear();
             if (_currentTeacher == null) return;
 
-            var logs = _gradeService.GetTeacherMarkLogs(_currentTeacher.Id, 30);
+            var logs = _absoluteService.GetTeacherMarkLogs(_currentTeacher.Id, 30);
             foreach (var l in logs)
                 Logs.Add(l);
         }
 
-        // Команда добавления оценки
         private RelayCommand _addMarkCommand;
         public RelayCommand AddMarkCommand => _addMarkCommand ?? (_addMarkCommand = new RelayCommand(
             obj => AddMark(),
@@ -164,7 +163,7 @@ namespace SchoolJournal.ViewModel
         {
             try
             {
-                _gradeService.AddMark(SelectedStudent.Id, SelectedSubject.Id, _currentTeacher.Id, SelectedMarkValue);
+                _absoluteService.AddMark(SelectedStudent.Id, SelectedSubject.Id, _currentTeacher.Id, SelectedMarkValue);
                 StatusMessage = "Оценка добавлена.";
                 RefreshAfterChange();
             }
@@ -174,7 +173,6 @@ namespace SchoolJournal.ViewModel
             }
         }
 
-        // Команда обновления оценки (передаётся markId)
         private RelayCommand _updateMarkCommand;
         public RelayCommand UpdateMarkCommand => _updateMarkCommand ?? (_updateMarkCommand = new RelayCommand(
             obj => UpdateMark((int)obj),
@@ -184,7 +182,7 @@ namespace SchoolJournal.ViewModel
         {
             try
             {
-                _gradeService.UpdateMark(markId, SelectedMarkValue, _currentTeacher.Id);
+                _absoluteService.UpdateMark(markId, SelectedMarkValue, _currentTeacher.Id);
                 StatusMessage = "Оценка изменена.";
                 RefreshAfterChange();
             }
@@ -194,7 +192,6 @@ namespace SchoolJournal.ViewModel
             }
         }
 
-        // Команда удаления оценки
         private RelayCommand _deleteMarkCommand;
         public RelayCommand DeleteMarkCommand => _deleteMarkCommand ?? (_deleteMarkCommand = new RelayCommand(
             obj => DeleteMark((int)obj),
@@ -209,7 +206,7 @@ namespace SchoolJournal.ViewModel
             {
                 try
                 {
-                    _gradeService.DeleteMark(markId, _currentTeacher.Id);
+                    _absoluteService.DeleteMark(markId, _currentTeacher.Id);
                     StatusMessage = "Оценка удалена.";
                     RefreshAfterChange();
                 }

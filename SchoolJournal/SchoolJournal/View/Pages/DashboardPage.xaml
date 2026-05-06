@@ -10,7 +10,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Приветствие -->
+
         <TextBlock Grid.Row="0" Text="{Binding WelcomeMessage}"
                    FontSize="24" FontWeight="Bold" Foreground="#4A90D9" Margin="0,0,0,20"/>
 
@@ -26,10 +26,9 @@
             </StackPanel>
         </Border>
 
-        <!-- Прокручиваемая область -->
+
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <!-- Карточки -->
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                     <!-- Средний балл (ученик/родитель) -->
                     <Border Background="#4A90D9" CornerRadius="10" Padding="25" Margin="0,0,20,0"

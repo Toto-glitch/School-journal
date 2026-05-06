@@ -9,14 +9,13 @@ namespace SchoolJournal.ViewModel
 {
     public class StudentsManagementViewModel : BaseViewModel
     {
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private ObservableCollection<Student> _students;
         private Student _selectedStudent;
         private bool _isDirector;
         private ObservableCollection<Group> _groups;
         private ObservableCollection<Parent> _parents;
 
-        // Поля формы
         private string _lastName;
         private string _firstName;
         private string _fatherName;
@@ -31,7 +30,7 @@ namespace SchoolJournal.ViewModel
 
         public StudentsManagementViewModel(Window win, User currentUser) : base(win)
         {
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             _isDirector = currentUser.Role == UserRole.Director;
             Students = new ObservableCollection<Student>();
             Groups = new ObservableCollection<Group>();
@@ -99,26 +98,22 @@ namespace SchoolJournal.ViewModel
 
         private void LoadData()
         {
-            // Загрузка учеников
-            var allStudents = _gradeService.GetAllStudents();
+            var allStudents = _absoluteService.GetAllStudents();
             Students.Clear();
             foreach (var s in allStudents)
                 Students.Add(s);
 
-            // Загрузка групп
-            var allGroups = _gradeService.GetAllGroups();
+            var allGroups = _absoluteService.GetAllGroups();
             Groups.Clear();
             foreach (var g in allGroups)
                 Groups.Add(g);
 
-            // Загрузка родителей
-            var allParents = _gradeService.GetAllParents();
+            var allParents = _absoluteService.GetAllParents();
             Parents.Clear();
             foreach (var p in allParents)
                 Parents.Add(p);
         }
 
-        // ========== Открытие диалога добавления ==========
         private RelayCommand _addStudentCommand;
         public RelayCommand AddStudentCommand => _addStudentCommand ?? (_addStudentCommand = new RelayCommand(
             obj => OpenAddDialog(),
@@ -139,7 +134,6 @@ namespace SchoolJournal.ViewModel
             IsDialogOpen = true;
         }
 
-        // ========== Редактирование ==========
         private RelayCommand _editStudentCommand;
         public RelayCommand EditStudentCommand => _editStudentCommand ?? (_editStudentCommand = new RelayCommand(
             obj => StartEdit(),
@@ -154,7 +148,6 @@ namespace SchoolJournal.ViewModel
             FatherName = SelectedStudent.FatherName;
             SelectedGroup = Groups.FirstOrDefault(g => g.Id == SelectedStudent.GroupId);
 
-            // Загружаем актуальный объект из базы, чтобы получить коллекцию родителей
             Student studentWithParents = null;
             using (var context = new ApplicationContext())
             {
@@ -163,7 +156,6 @@ namespace SchoolJournal.ViewModel
                     .FirstOrDefault(s => s.Id == SelectedStudent.Id);
             }
 
-            // Если у ученика есть родители, выбираем первого (можно доработать для множественного выбора)
             if (studentWithParents?.Parents != null && studentWithParents.Parents.Any())
                 SelectedParent = Parents.FirstOrDefault(p => p.Id == studentWithParents.Parents.First().Id);
             else
@@ -181,7 +173,6 @@ namespace SchoolJournal.ViewModel
             IsDialogOpen = true;
         }
 
-        // ========== Сохранение (добавление/обновление) ==========
         private RelayCommand _saveCommand;
         public RelayCommand SaveCommand => _saveCommand ?? (_saveCommand = new RelayCommand(
             obj => Save(),
@@ -211,25 +202,22 @@ namespace SchoolJournal.ViewModel
             {
                 if (IsEditing && SelectedStudent != null)
                 {
-                    // Обновление ученика
                     SelectedStudent.LastName = LastName;
                     SelectedStudent.FirstName = FirstName;
                     SelectedStudent.FatherName = FatherName;
                     SelectedStudent.GroupId = SelectedGroup.Id;
-                    _gradeService.UpdateStudent(SelectedStudent);
+                    _absoluteService.UpdateStudent(SelectedStudent);
 
-                    // Обновление пользователя
                     if (SelectedStudent.User != null)
                     {
                         SelectedStudent.User.Username = Username;
                         SelectedStudent.User.Email = Email;
                         SelectedStudent.User.PhoneNumber = PhoneNumber;
                         if (!string.IsNullOrWhiteSpace(Password))
-                            SelectedStudent.User.PasswordHash = HashPassword(Password);
-                        _gradeService.UpdateUser(SelectedStudent.User);
+                            SelectedStudent.User.PasswordHash = PasswordHelper.HashPassword(Password);
+                        _absoluteService.UpdateUser(SelectedStudent.User);
                     }
 
-                    // Обновление связи с родителем (очищаем старые и добавляем новую)
                     using (var context = new ApplicationContext())
                     {
                         var stud = context.Students.Include("Parents").FirstOrDefault(s => s.Id == SelectedStudent.Id);
@@ -245,16 +233,15 @@ namespace SchoolJournal.ViewModel
                 }
                 else
                 {
-                    // Добавление нового ученика
                     var user = new User
                     {
                         Username = string.IsNullOrWhiteSpace(Username) ? $"{LastName}_{FirstName}" : Username,
-                        PasswordHash = HashPassword(string.IsNullOrWhiteSpace(Password) ? "default123" : Password),
+                        PasswordHash = PasswordHelper.HashPassword(string.IsNullOrWhiteSpace(Password) ? "default123" : Password),
                         Email = Email ?? "",
                         PhoneNumber = PhoneNumber ?? "",
                         Role = UserRole.Student
                     };
-                    _gradeService.AddUser(user);
+                    _absoluteService.AddUser(user);
 
                     var student = new Student
                     {
@@ -264,10 +251,8 @@ namespace SchoolJournal.ViewModel
                         GroupId = SelectedGroup.Id,
                         UserId = user.Id
                     };
-                    _gradeService.AddStudent(student);
-
-                    // Связываем с выбранным родителем
-                    _gradeService.AddStudentParent(student.Id, SelectedParent.Id);
+                    _absoluteService.AddStudent(student);
+                    _absoluteService.AddStudentParent(student.Id, SelectedParent.Id);
                 }
 
                 LoadData();
@@ -280,7 +265,6 @@ namespace SchoolJournal.ViewModel
             }
         }
 
-        // ========== Удаление ==========
         private RelayCommand _deleteStudentCommand;
         public RelayCommand DeleteStudentCommand => _deleteStudentCommand ?? (_deleteStudentCommand = new RelayCommand(
             obj => DeleteStudent(),
@@ -298,9 +282,9 @@ namespace SchoolJournal.ViewModel
             {
                 try
                 {
-                    _gradeService.DeleteStudent(SelectedStudent.Id);
+                    _absoluteService.DeleteStudent(SelectedStudent.Id);
                     if (SelectedStudent.User != null)
-                        _gradeService.DeleteUser(SelectedStudent.User.Id);
+                        _absoluteService.DeleteUser(SelectedStudent.User.Id);
                     LoadData();
                     MessageBox.Show("Ученик удалён.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -314,17 +298,5 @@ namespace SchoolJournal.ViewModel
         private RelayCommand _cancelCommand;
         public RelayCommand CancelCommand => _cancelCommand ?? (_cancelCommand = new RelayCommand(
             obj => { IsDialogOpen = false; }));
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
-            {
-                var bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                var builder = new System.Text.StringBuilder();
-                foreach (var b in bytes)
-                    builder.Append(b.ToString("x2"));
-                return builder.ToString();
-            }
-        }
     }
 }

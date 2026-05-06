@@ -10,12 +10,11 @@ namespace SchoolJournal.ViewModel
 {
     public class ParentsManagementViewModel : BaseViewModel
     {
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private ObservableCollection<Parent> _parents;
         private Parent _selectedParent;
         private bool _isDirector;
 
-        // Поля формы
         private string _lastName;
         private string _firstName;
         private string _fatherName;
@@ -26,13 +25,12 @@ namespace SchoolJournal.ViewModel
         private bool _isEditing;
         private bool _isDialogOpen;
 
-        // Студенты для привязки
         private ObservableCollection<Student> _allStudents;
-        private ObservableCollection<Student> _selectedStudents; // выбранные в диалоге
+        private ObservableCollection<Student> _selectedStudents;
 
         public ParentsManagementViewModel(Window win, User currentUser) : base(win)
         {
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             _isDirector = currentUser.Role == UserRole.Director;
             Parents = new ObservableCollection<Parent>();
             AllStudents = new ObservableCollection<Student>();
@@ -68,17 +66,15 @@ namespace SchoolJournal.ViewModel
 
         private void LoadData()
         {
-            var allParents = _gradeService.GetAllParents();
+            var allParents = _absoluteService.GetAllParents();
             Parents.Clear();
             foreach (var p in allParents) Parents.Add(p);
 
-            // Загружаем всех учеников для выбора
-            var allStudents = _gradeService.GetAllStudents();
+            var allStudents = _absoluteService.GetAllStudents();
             AllStudents.Clear();
             foreach (var s in allStudents) AllStudents.Add(s);
         }
 
-        // ========== Открытие диалога добавления ==========
         private RelayCommand _addParentCommand;
         public RelayCommand AddParentCommand => _addParentCommand ?? (_addParentCommand = new RelayCommand(
             obj => OpenAddDialog(),
@@ -91,7 +87,6 @@ namespace SchoolJournal.ViewModel
             IsDialogOpen = true;
         }
 
-        // ========== Редактирование ==========
         private RelayCommand _editParentCommand;
         public RelayCommand EditParentCommand => _editParentCommand ?? (_editParentCommand = new RelayCommand(
             obj => StartEdit(),
@@ -112,14 +107,12 @@ namespace SchoolJournal.ViewModel
             }
             Password = "";
 
-            // Загружаем текущих детей родителя в SelectedStudents
             SelectedStudents = new ObservableCollection<Student>(SelectedParent.Students);
 
             IsEditing = true;
             IsDialogOpen = true;
         }
 
-        // ========== Сохранение ==========
         private RelayCommand _saveCommand;
         public RelayCommand SaveCommand => _saveCommand ?? (_saveCommand = new RelayCommand(
             obj => Save(),
@@ -137,11 +130,10 @@ namespace SchoolJournal.ViewModel
             {
                 if (IsEditing && SelectedParent != null)
                 {
-                    // Обновление родителя
                     SelectedParent.LastName = LastName;
                     SelectedParent.FirstName = FirstName;
                     SelectedParent.FatherName = FatherName;
-                    _gradeService.UpdateParent(SelectedParent);
+                    _absoluteService.UpdateParent(SelectedParent);
 
                     if (SelectedParent.User != null)
                     {
@@ -149,25 +141,23 @@ namespace SchoolJournal.ViewModel
                         SelectedParent.User.Email = Email;
                         SelectedParent.User.PhoneNumber = PhoneNumber;
                         if (!string.IsNullOrWhiteSpace(Password))
-                            SelectedParent.User.PasswordHash = HashPassword(Password);
-                        _gradeService.UpdateUser(SelectedParent.User);
+                            SelectedParent.User.PasswordHash = PasswordHelper.HashPassword(Password);
+                        _absoluteService.UpdateUser(SelectedParent.User);
                     }
 
-                    // Обновление связей с учениками
                     UpdateParentStudents(SelectedParent.Id, SelectedStudents.Select(s => s.Id).ToList());
                 }
                 else
                 {
-                    // Добавление нового родителя
                     var user = new User
                     {
                         Username = string.IsNullOrWhiteSpace(Username) ? $"{LastName}_{FirstName}" : Username,
-                        PasswordHash = HashPassword(string.IsNullOrWhiteSpace(Password) ? "default123" : Password),
+                        PasswordHash = PasswordHelper.HashPassword(string.IsNullOrWhiteSpace(Password) ? "default123" : Password),
                         Email = Email ?? "",
                         PhoneNumber = PhoneNumber ?? "",
                         Role = UserRole.Parent
                     };
-                    _gradeService.AddUser(user);
+                    _absoluteService.AddUser(user);
 
                     var parent = new Parent
                     {
@@ -176,9 +166,8 @@ namespace SchoolJournal.ViewModel
                         FatherName = FatherName,
                         UserId = user.Id
                     };
-                    _gradeService.AddParent(parent);
+                    _absoluteService.AddParent(parent);
 
-                    // Привязываем выбранных учеников
                     UpdateParentStudents(parent.Id, SelectedStudents.Select(s => s.Id).ToList());
                 }
 
@@ -192,7 +181,6 @@ namespace SchoolJournal.ViewModel
             }
         }
 
-        // ========== Удаление ==========
         private RelayCommand _deleteParentCommand;
         public RelayCommand DeleteParentCommand => _deleteParentCommand ?? (_deleteParentCommand = new RelayCommand(
             obj => DeleteParent(),
@@ -208,8 +196,8 @@ namespace SchoolJournal.ViewModel
                 try
                 {
                     int uid = SelectedParent.UserId;
-                    _gradeService.DeleteParent(SelectedParent.Id);
-                    _gradeService.DeleteUser(uid);
+                    _absoluteService.DeleteParent(SelectedParent.Id);
+                    _absoluteService.DeleteUser(uid);
                     LoadData();
                 }
                 catch (Exception ex) { MessageBox.Show(ex.Message); }
@@ -226,7 +214,6 @@ namespace SchoolJournal.ViewModel
             SelectedStudents.Clear();
         }
 
-        // Вспомогательный метод для обновления связей many-to-many
         private void UpdateParentStudents(int parentId, List<int> newStudentIds)
         {
             using (var context = new ApplicationContext())
@@ -234,11 +221,9 @@ namespace SchoolJournal.ViewModel
                 var parent = context.Parents.Include("Students").FirstOrDefault(p => p.Id == parentId);
                 if (parent == null) return;
 
-                // Очищаем текущие связи
                 parent.Students.Clear();
                 context.SaveChanges();
 
-                // Добавляем выбранных учеников
                 foreach (var studentId in newStudentIds)
                 {
                     var student = context.Students.Find(studentId);
@@ -246,17 +231,6 @@ namespace SchoolJournal.ViewModel
                         parent.Students.Add(student);
                 }
                 context.SaveChanges();
-            }
-        }
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
-            {
-                var bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                var sb = new System.Text.StringBuilder();
-                foreach (var b in bytes) sb.Append(b.ToString("x2"));
-                return sb.ToString();
             }
         }
     }

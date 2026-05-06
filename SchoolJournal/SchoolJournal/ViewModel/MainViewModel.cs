@@ -8,15 +8,12 @@ namespace SchoolJournal.ViewModel
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly AuthService _authService;
-        private readonly GradeService _gradeService;
         private readonly User _currentUser;
 
         private string _currentUserName;
         private string _currentUserRole;
         private Frame _mainFrame;
 
-        // Видимость разделов
         private Visibility _dashboardVisibility = Visibility.Visible;
         private Visibility _diaryVisibility = Visibility.Collapsed;
         private Visibility _journalVisibility = Visibility.Collapsed;
@@ -27,8 +24,6 @@ namespace SchoolJournal.ViewModel
 
         public MainViewModel(Window win, User user) : base(win)
         {
-            _authService = new AuthService();
-            _gradeService = new GradeService();
             _currentUser = user;
 
             CurrentUserName = $"{user.Username} ({GetRoleName(user.Role)})";

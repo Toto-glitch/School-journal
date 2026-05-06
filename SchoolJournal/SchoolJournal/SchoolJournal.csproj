@@ -175,10 +175,14 @@
     <Compile Include="Converters\BoolToStringConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Model\DatabaseInitializer.cs" />
+    <Compile Include="Service\AbsoluteService.cs" />
     <Compile Include="Service\AuthService.cs" />
-    <Compile Include="Service\GradeServices.cs" />
     <Compile Include="Converters\IntToIndexConverter.cs" />
+    <Compile Include="Service\MarkService.cs" />
+    <Compile Include="Service\PasswordHelper.cs" />
     <Compile Include="Service\RelayCommand.cs" />
+    <Compile Include="Service\SubjectGroup.cs" />
+    <Compile Include="Service\UserService.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\DashboardViewModel.cs" />
     <Compile Include="ViewModel\DiaryViewModel.cs" />

@@ -3,18 +3,16 @@ using SchoolJournal.Service;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Input;
 
 namespace SchoolJournal.ViewModel
 {
     public class TeachersManagementViewModel : BaseViewModel
     {
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private ObservableCollection<Teacher> _teachers;
         private Teacher _selectedTeacher;
         private bool _isDirector;
 
-        // Поля формы
         private string _lastName;
         private string _firstName;
         private string _fatherName;
@@ -27,7 +25,7 @@ namespace SchoolJournal.ViewModel
 
         public TeachersManagementViewModel(Window win, User currentUser) : base(win)
         {
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             _isDirector = currentUser.Role == UserRole.Director;
             Teachers = new ObservableCollection<Teacher>();
             LoadTeachers();
@@ -69,13 +67,12 @@ namespace SchoolJournal.ViewModel
 
         private void LoadTeachers()
         {
-            var all = _gradeService.GetAllTeachers();
+            var all = _absoluteService.GetAllTeachers();
             Teachers.Clear();
             foreach (var t in all)
                 Teachers.Add(t);
         }
 
-        // ========== Команда открытия диалога для добавления ==========
         private RelayCommand _addTeacherCommand;
         public RelayCommand AddTeacherCommand => _addTeacherCommand ?? (_addTeacherCommand = new RelayCommand(
             obj => OpenAddDialog(),
@@ -94,7 +91,6 @@ namespace SchoolJournal.ViewModel
             IsDialogOpen = true;
         }
 
-        // ========== Команда редактирования ==========
         private RelayCommand _editTeacherCommand;
         public RelayCommand EditTeacherCommand => _editTeacherCommand ?? (_editTeacherCommand = new RelayCommand(
             obj => StartEdit(),
@@ -114,13 +110,12 @@ namespace SchoolJournal.ViewModel
                 Email = SelectedTeacher.User.Email;
                 PhoneNumber = SelectedTeacher.User.PhoneNumber;
             }
-            Password = ""; // пароль при редактировании не показываем
+            Password = "";
 
             IsEditing = true;
             IsDialogOpen = true;
         }
 
-        // ========== Команда сохранения (добавление или обновление) ==========
         private RelayCommand _saveCommand;
         public RelayCommand SaveCommand => _saveCommand ?? (_saveCommand = new RelayCommand(
             obj => Save(),
@@ -138,11 +133,10 @@ namespace SchoolJournal.ViewModel
             {
                 if (IsEditing && SelectedTeacher != null)
                 {
-                    // Обновление
                     SelectedTeacher.LastName = LastName;
                     SelectedTeacher.FirstName = FirstName;
                     SelectedTeacher.FatherName = FatherName;
-                    _gradeService.UpdateTeacher(SelectedTeacher);
+                    _absoluteService.UpdateTeacher(SelectedTeacher);
 
                     if (SelectedTeacher.User != null)
                     {
@@ -150,22 +144,21 @@ namespace SchoolJournal.ViewModel
                         SelectedTeacher.User.Email = Email;
                         SelectedTeacher.User.PhoneNumber = PhoneNumber;
                         if (!string.IsNullOrWhiteSpace(Password))
-                            SelectedTeacher.User.PasswordHash = HashPassword(Password);
-                        _gradeService.UpdateUser(SelectedTeacher.User);
+                            SelectedTeacher.User.PasswordHash = PasswordHelper.HashPassword(Password);
+                        _absoluteService.UpdateUser(SelectedTeacher.User);
                     }
                 }
                 else
                 {
-                    // Добавление
                     var user = new User
                     {
                         Username = string.IsNullOrWhiteSpace(Username) ? $"{LastName}_{FirstName}" : Username,
-                        PasswordHash = HashPassword(string.IsNullOrWhiteSpace(Password) ? "default123" : Password),
+                        PasswordHash = PasswordHelper.HashPassword(string.IsNullOrWhiteSpace(Password) ? "default123" : Password),
                         Email = Email ?? "",
                         PhoneNumber = PhoneNumber ?? "",
                         Role = UserRole.Teacher
                     };
-                    _gradeService.AddUser(user);
+                    _absoluteService.AddUser(user);
 
                     var teacher = new Teacher
                     {
@@ -174,7 +167,7 @@ namespace SchoolJournal.ViewModel
                         FatherName = FatherName,
                         UserId = user.Id
                     };
-                    _gradeService.AddTeacher(teacher);
+                    _absoluteService.AddTeacher(teacher);
                 }
 
                 LoadTeachers();
@@ -187,7 +180,6 @@ namespace SchoolJournal.ViewModel
             }
         }
 
-        // ========== Команда удаления ==========
         private RelayCommand _deleteTeacherCommand;
         public RelayCommand DeleteTeacherCommand => _deleteTeacherCommand ?? (_deleteTeacherCommand = new RelayCommand(
             obj => DeleteTeacher(),
@@ -205,10 +197,9 @@ namespace SchoolJournal.ViewModel
             {
                 try
                 {
-                    // Используем безопасный метод удаления
-                    _gradeService.DeleteTeacher(SelectedTeacher.Id);
+                    _absoluteService.DeleteTeacher(SelectedTeacher.Id);
                     if (SelectedTeacher.User != null)
-                        _gradeService.DeleteUser(SelectedTeacher.User.Id);
+                        _absoluteService.DeleteUser(SelectedTeacher.User.Id);
                     LoadTeachers();
                     MessageBox.Show("Учитель удалён.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -219,21 +210,8 @@ namespace SchoolJournal.ViewModel
             }
         }
 
-        // ========== Отмена ==========
         private RelayCommand _cancelCommand;
         public RelayCommand CancelCommand => _cancelCommand ?? (_cancelCommand = new RelayCommand(
             obj => { IsDialogOpen = false; }));
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
-            {
-                var bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                var builder = new System.Text.StringBuilder();
-                foreach (var b in bytes)
-                    builder.Append(b.ToString("x2"));
-                return builder.ToString();
-            }
-        }
     }
 }

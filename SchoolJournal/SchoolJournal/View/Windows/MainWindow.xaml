@@ -1,5 +1,4 @@
-﻿<!-- MainWindow.xaml -->
-<Window x:Class="SchoolJournal.View.Windows.MainWindow"
+﻿<Window x:Class="SchoolJournal.View.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Электронный дневник" Height="720" Width="1280"

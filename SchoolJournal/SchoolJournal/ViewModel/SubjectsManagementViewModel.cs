@@ -8,7 +8,7 @@ namespace SchoolJournal.ViewModel
 {
     public class SubjectsManagementViewModel : BaseViewModel
     {
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private ObservableCollection<Subject> _subjects;
         private Subject _selectedSubject;
         private bool _isDirector;
@@ -18,7 +18,7 @@ namespace SchoolJournal.ViewModel
 
         public SubjectsManagementViewModel(Window win, User currentUser) : base(win)
         {
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             _isDirector = currentUser.Role == UserRole.Director;
             Subjects = new ObservableCollection<Subject>();
             LoadData();
@@ -58,7 +58,7 @@ namespace SchoolJournal.ViewModel
 
         private void LoadData()
         {
-            var all = _gradeService.GetAllSubjects();
+            var all = _absoluteService.GetAllSubjects();
             Subjects.Clear();
             foreach (var s in all)
                 Subjects.Add(s);
@@ -107,12 +107,12 @@ namespace SchoolJournal.ViewModel
                 if (IsEditing && SelectedSubject != null)
                 {
                     SelectedSubject.Title = Title;
-                    _gradeService.UpdateSubject(SelectedSubject);
+                    _absoluteService.UpdateSubject(SelectedSubject);
                 }
                 else
                 {
                     var subject = new Subject { Title = Title };
-                    _gradeService.AddSubject(subject);
+                    _absoluteService.AddSubject(subject);
                 }
 
                 LoadData();
@@ -139,7 +139,7 @@ namespace SchoolJournal.ViewModel
             {
                 try
                 {
-                    _gradeService.DeleteSubject(SelectedSubject.Id);
+                    _absoluteService.DeleteSubject(SelectedSubject.Id);
                     LoadData();
                 }
                 catch (Exception ex) { MessageBox.Show(ex.Message); }

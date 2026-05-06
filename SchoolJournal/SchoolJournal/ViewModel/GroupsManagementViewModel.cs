@@ -8,7 +8,7 @@ namespace SchoolJournal.ViewModel
 {
     public class GroupsManagementViewModel : BaseViewModel
     {
-        private readonly GradeService _gradeService;
+        private readonly AbsoluteService _absoluteService;
         private ObservableCollection<Group> _groups;
         private Group _selectedGroup;
         private bool _isDirector;
@@ -18,7 +18,7 @@ namespace SchoolJournal.ViewModel
 
         public GroupsManagementViewModel(Window win, User currentUser) : base(win)
         {
-            _gradeService = new GradeService();
+            _absoluteService = new AbsoluteService();
             _isDirector = currentUser.Role == UserRole.Director;
             Groups = new ObservableCollection<Group>();
             LoadData();
@@ -58,13 +58,12 @@ namespace SchoolJournal.ViewModel
 
         private void LoadData()
         {
-            var all = _gradeService.GetAllGroups();
+            var all = _absoluteService.GetAllGroups();
             Groups.Clear();
             foreach (var g in all)
                 Groups.Add(g);
         }
 
-        // ========== Команды ==========
         private RelayCommand _addGroupCommand;
         public RelayCommand AddGroupCommand => _addGroupCommand ?? (_addGroupCommand = new RelayCommand(
             obj => OpenAddDialog(),
@@ -108,12 +107,12 @@ namespace SchoolJournal.ViewModel
                 if (IsEditing && SelectedGroup != null)
                 {
                     SelectedGroup.Title = Title;
-                    _gradeService.UpdateGroup(SelectedGroup);
+                    _absoluteService.UpdateGroup(SelectedGroup);
                 }
                 else
                 {
                     var group = new Group { Title = Title };
-                    _gradeService.AddGroup(group);
+                    _absoluteService.AddGroup(group);
                 }
 
                 LoadData();
@@ -140,7 +139,7 @@ namespace SchoolJournal.ViewModel
             {
                 try
                 {
-                    _gradeService.DeleteGroup(SelectedGroup.Id);
+                    _absoluteService.DeleteGroup(SelectedGroup.Id);
                     LoadData();
                 }
                 catch (Exception ex) { MessageBox.Show(ex.Message); }

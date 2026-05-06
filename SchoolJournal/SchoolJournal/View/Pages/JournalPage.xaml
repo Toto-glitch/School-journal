@@ -23,7 +23,6 @@
                       Width="250" Height="28"/>
         </StackPanel>
 
-        <!-- Основное содержимое с вкладками -->
         <TabControl Grid.Row="2">
             <TabItem Header="Выставление оценок">
                 <Grid Margin="10">
