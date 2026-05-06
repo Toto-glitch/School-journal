@@ -171,6 +171,7 @@
     </ApplicationDefinition>
     <Compile Include="Service\AuthService.cs" />
     <Compile Include="Service\GradeServices.cs" />
+    <Compile Include="Service\IntToIndexConverter.cs" />
     <Compile Include="Service\RelayCommand.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\DashboardViewModel.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="ViewModel\GroupsManagementViewModel.cs" />
     <Compile Include="ViewModel\JournalViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
+    <Compile Include="ViewModel\StudentsViewModel.cs" />
     <Compile Include="View\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

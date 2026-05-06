@@ -1,6 +1,7 @@
 ﻿<Application x:Class="SchoolJournal.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SchoolJournal.Service"
              StartupUri="View/Windows/LoginWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <local:IntToIndexConverter x:Key="IntToIndexConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

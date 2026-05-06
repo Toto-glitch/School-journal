@@ -142,10 +142,6 @@ namespace SchoolJournal.ViewModel
                     page = new JournalPage();
                     page.DataContext = new JournalViewModel(_current_window, _currentUser);
                     break;
-                case "StudentsPage":
-                    page = new StudentsPage();
-                    // ViewModel добавим позже
-                    break;
                 case "TeachersPage":
                     page = new TeachersPage();
                     break;
@@ -154,6 +150,10 @@ namespace SchoolJournal.ViewModel
                     break;
                 case "ParentsPage":
                     page = new ParentsPage();
+                    break;
+                case "StudentsPage":
+                    page = new StudentsPage();
+                    page.DataContext = new StudentsViewModel(_current_window, _currentUser);
                     break;
                 default:
                     return;

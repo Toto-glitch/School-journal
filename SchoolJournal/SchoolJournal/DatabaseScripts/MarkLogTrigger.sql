@@ -53,28 +53,5 @@ BEGIN
 END
 GO
 
--- ============================================
--- Триггер для DELETE (удаление оценки)
--- ============================================
-CREATE OR ALTER TRIGGER [dbo].[TR_Mark_Delete_Log]
-ON [dbo].[Marks]
-AFTER DELETE
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO [dbo].[MarkLogs] ([MarkId], [OldValue], [NewValue], [ChangeDate], [UserId], [Action])
-    SELECT
-        d.[Id] AS MarkId,
-        d.[Value] AS OldValue,
-        NULL AS NewValue,
-        GETDATE() AS ChangeDate,
-        t.[UserId] AS UserId,  -- Берем UserId из таблицы Teachers
-        N'Удаление оценки' AS Action
-    FROM deleted d
-    INNER JOIN [dbo].[Teachers] t ON d.[TeacherId] = t.[Id];
-END
-GO
-
 PRINT 'Triggers created!';
 GO
