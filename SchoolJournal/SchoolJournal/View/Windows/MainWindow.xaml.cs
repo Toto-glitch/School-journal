@@ -9,7 +9,9 @@ namespace SchoolJournal.View.Windows
         public MainWindow(User user)
         {
             InitializeComponent();
-            DataContext = new MainViewModel(this, user);
+            var viewModel = new MainViewModel(this, user);
+            DataContext = viewModel;
+            viewModel.MainFrame = MainFrame; // Передаём Frame в ViewModel
         }
     }
 }

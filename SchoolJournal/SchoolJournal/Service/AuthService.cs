@@ -46,8 +46,10 @@ namespace SchoolJournal.Service
             using (var context = new ApplicationContext())
             {
                 return context.Students
-                    .Include(s => s.Marks.Select(m => m.Subject))
                     .Include(s => s.Group)
+                    .Include(s => s.Marks.Select(m => m.Subject))
+                    .Include(s => s.Marks.Select(m => m.Teacher))
+                    .Include(s => s.Parents)
                     .FirstOrDefault(s => s.UserId == userId);
             }
         }
@@ -57,7 +59,9 @@ namespace SchoolJournal.Service
             using (var context = new ApplicationContext())
             {
                 return context.Parents
+                    .Include(p => p.Students.Select(s => s.Group))
                     .Include(p => p.Students.Select(s => s.Marks.Select(m => m.Subject)))
+                    .Include(p => p.Students.Select(s => s.Marks.Select(m => m.Teacher)))
                     .FirstOrDefault(p => p.UserId == userId);
             }
         }

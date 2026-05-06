@@ -1,21 +1,22 @@
 ﻿using SchoolJournal.Model;
+using SchoolJournal.Service;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using SchoolJournal.Service;
 
 namespace SchoolJournal.ViewModel
 {
     public class DiaryViewModel : BaseViewModel
     {
-        private AuthService _authService;
-        private GradeService _gradeService;
-        private User _currentUser;
-        private Student _currentStudent;
+        private readonly AuthService _authService;
+        private readonly GradeService _gradeService;
+        private readonly User _currentUser;
 
+        private ObservableCollection<Student> _children;
+        private Student _selectedChild;
         private ObservableCollection<Subject> _subjects;
-        private ObservableCollection<Mark> _marks;
         private Subject _selectedSubject;
+        private ObservableCollection<Mark> _marks;
         private double _averageMark;
         private string _statusMessage;
 
@@ -25,22 +26,37 @@ namespace SchoolJournal.ViewModel
             _gradeService = new GradeService();
             _currentUser = user;
 
-            _subjects = new ObservableCollection<Subject>();
-            _marks = new ObservableCollection<Mark>();
+            Children = new ObservableCollection<Student>();
+            Subjects = new ObservableCollection<Subject>();
+            Marks = new ObservableCollection<Mark>();
 
-            LoadStudentData();
+            LoadInitialData();
+        }
+
+        public bool IsParent => _currentUser.Role == UserRole.Parent;
+
+        public ObservableCollection<Student> Children
+        {
+            get => _children;
+            set { _children = value; OnPropertyChanged(nameof(Children)); }
+        }
+
+        public Student SelectedChild
+        {
+            get => _selectedChild;
+            set
+            {
+                _selectedChild = value;
+                OnPropertyChanged(nameof(SelectedChild));
+                if (value != null)
+                    LoadStudentData();
+            }
         }
 
         public ObservableCollection<Subject> Subjects
         {
             get => _subjects;
             set { _subjects = value; OnPropertyChanged(nameof(Subjects)); }
-        }
-
-        public ObservableCollection<Mark> Marks
-        {
-            get => _marks;
-            set { _marks = value; OnPropertyChanged(nameof(Marks)); }
         }
 
         public Subject SelectedSubject
@@ -55,6 +71,12 @@ namespace SchoolJournal.ViewModel
             }
         }
 
+        public ObservableCollection<Mark> Marks
+        {
+            get => _marks;
+            set { _marks = value; OnPropertyChanged(nameof(Marks)); }
+        }
+
         public double AverageMark
         {
             get => _averageMark;
@@ -67,73 +89,60 @@ namespace SchoolJournal.ViewModel
             set { _statusMessage = value; OnPropertyChanged(nameof(StatusMessage)); }
         }
 
+        private void LoadInitialData()
+        {
+            if (IsParent)
+            {
+                var parent = _authService.GetParentByUserId(_currentUser.Id);
+                if (parent?.Students != null)
+                {
+                    foreach (var student in parent.Students)
+                        Children.Add(student);
+
+                    if (Children.Any())
+                        SelectedChild = Children.First();
+                }
+            }
+            else if (_currentUser.Role == UserRole.Student)
+            {
+                var student = _authService.GetStudentByUserId(_currentUser.Id);
+                if (student != null)
+                {
+                    Children.Add(student);
+                    SelectedChild = student;
+                }
+            }
+        }
+
         private void LoadStudentData()
         {
-            // Получаем данные студента в зависимости от роли пользователя
-            if (_currentUser.Role == UserRole.Student)
+            if (SelectedChild == null) return;
+
+            Subjects.Clear();
+            Marks.Clear();
+
+            // Загружаем ВСЕ предметы школы
+            var allSubjects = _gradeService.GetAllSubjects();
+            foreach (var subj in allSubjects)
             {
-                _currentStudent = _authService.GetStudentByUserId(_currentUser.Id);
-            }
-            else if (_currentUser.Role == UserRole.Parent)
-            {
-                // Для родителя нужно выбрать ребенка (здесь берем первого)
-                var parent = _authService.GetParentByUserId(_currentUser.Id);
-                if (parent?.Students.Any() == true)
-                {
-                    _currentStudent = parent.Students.First();
-                }
+                Subjects.Add(subj);
             }
 
-            if (_currentStudent != null)
-            {
-                // Загружаем предметы (все предметы школы или предметы группы студента)
-                var allSubjects = _gradeService.GetAllSubjects();
-                foreach (var subject in allSubjects)
-                {
-                    Subjects.Add(subject);
-                }
-
-                // Загружаем все оценки студента
-                var allMarks = _gradeService.GetStudentMarks(_currentStudent.Id);
-                foreach (var mark in allMarks)
-                {
-                    Marks.Add(mark);
-                }
-
-                // Вычисляем средний балл
-                AverageMark = _gradeService.GetOverallAverageMark(_currentStudent.Id);
-
-                StatusMessage = $"Ученик: {_currentStudent.LastName} {_currentStudent.FirstName}, Группа: {_currentStudent.Group?.Title}";
-            }
-            else
-            {
-                StatusMessage = "Данные ученика не найдены";
-            }
+            // Вычисляем средний балл и статус (ВНЕ цикла!)
+            AverageMark = _gradeService.GetOverallAverageMark(SelectedChild.Id);
+            StatusMessage = $"Ученик: {SelectedChild.LastName} {SelectedChild.FirstName} | Группа: {SelectedChild.Group?.Title ?? "Не назначена"}";
         }
 
         private void LoadMarksForSubject()
         {
-            if (_currentStudent == null || _selectedSubject == null)
-                return;
+            if (SelectedChild == null || SelectedSubject == null) return;
 
             Marks.Clear();
-            var marks = _gradeService.GetStudentMarksBySubject(_currentStudent.Id, _selectedSubject.Id);
-            foreach (var mark in marks)
-            {
-                Marks.Add(mark);
-            }
+            var marks = _gradeService.GetStudentMarksBySubject(SelectedChild.Id, SelectedSubject.Id);
+            foreach (var m in marks)
+                Marks.Add(m);
 
-            AverageMark = _gradeService.GetAverageMarkBySubject(_currentStudent.Id, _selectedSubject.Id);
-        }
-
-        private RelayCommand _refreshCommand;
-        public RelayCommand RefreshCommand => _refreshCommand ?? (_refreshCommand = new RelayCommand(obj => Refresh()));
-
-        private void Refresh()
-        {
-            Marks.Clear();
-            Subjects.Clear();
-            LoadStudentData();
+            AverageMark = _gradeService.GetAverageMarkBySubject(SelectedChild.Id, SelectedSubject.Id);
         }
     }
 }

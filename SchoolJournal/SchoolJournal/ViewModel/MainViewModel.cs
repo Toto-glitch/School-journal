@@ -1,23 +1,29 @@
 ﻿using SchoolJournal.Model;
 using SchoolJournal.Service;
-using System.Collections.ObjectModel;
+using SchoolJournal.View.Pages;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace SchoolJournal.ViewModel
 {
     public class MainViewModel : BaseViewModel
     {
-        private AuthService _authService;
-        private GradeService _gradeService;
-        private User _currentUser;
+        private readonly AuthService _authService;
+        private readonly GradeService _gradeService;
+        private readonly User _currentUser;
+
         private string _currentUserName;
         private string _currentUserRole;
-        private int _selectedMenuItemIndex;
-        private object _currentPageContent;
+        private Frame _mainFrame;
 
-        // Коллекции данных
-        private ObservableCollection<MarkLog> _recentLogs;
-        private ObservableCollection<Subject> _teacherSubjects;
+        // Видимость разделов
+        private Visibility _dashboardVisibility = Visibility.Visible;
+        private Visibility _diaryVisibility = Visibility.Collapsed;
+        private Visibility _journalVisibility = Visibility.Collapsed;
+        private Visibility _studentsVisibility = Visibility.Collapsed;
+        private Visibility _teachersVisibility = Visibility.Collapsed;
+        private Visibility _subjectsVisibility = Visibility.Collapsed;
+        private Visibility _parentsVisibility = Visibility.Collapsed;
 
         public MainViewModel(Window win, User user) : base(win)
         {
@@ -28,10 +34,13 @@ namespace SchoolJournal.ViewModel
             CurrentUserName = $"{user.Username} ({GetRoleName(user.Role)})";
             CurrentUserRole = GetRoleName(user.Role);
 
-            _recentLogs = new ObservableCollection<MarkLog>();
-            _teacherSubjects = new ObservableCollection<Subject>();
+            SetPermissionsByRole();
+        }
 
-            LoadUserData();
+        public Frame MainFrame
+        {
+            get => _mainFrame;
+            set => _mainFrame = value;
         }
 
         public User CurrentUser => _currentUser;
@@ -48,73 +57,119 @@ namespace SchoolJournal.ViewModel
             set { _currentUserRole = value; OnPropertyChanged(nameof(CurrentUserRole)); }
         }
 
-        public int SelectedMenuItemIndex
+        public Visibility DashboardVisibility
         {
-            get => _selectedMenuItemIndex;
-            set
+            get => _dashboardVisibility;
+            set { _dashboardVisibility = value; OnPropertyChanged(nameof(DashboardVisibility)); }
+        }
+        public Visibility DiaryVisibility
+        {
+            get => _diaryVisibility;
+            set { _diaryVisibility = value; OnPropertyChanged(nameof(DiaryVisibility)); }
+        }
+        public Visibility JournalVisibility
+        {
+            get => _journalVisibility;
+            set { _journalVisibility = value; OnPropertyChanged(nameof(JournalVisibility)); }
+        }
+        public Visibility StudentsVisibility
+        {
+            get => _studentsVisibility;
+            set { _studentsVisibility = value; OnPropertyChanged(nameof(StudentsVisibility)); }
+        }
+        public Visibility TeachersVisibility
+        {
+            get => _teachersVisibility;
+            set { _teachersVisibility = value; OnPropertyChanged(nameof(TeachersVisibility)); }
+        }
+        public Visibility SubjectsVisibility
+        {
+            get => _subjectsVisibility;
+            set { _subjectsVisibility = value; OnPropertyChanged(nameof(SubjectsVisibility)); }
+        }
+        public Visibility ParentsVisibility
+        {
+            get => _parentsVisibility;
+            set { _parentsVisibility = value; OnPropertyChanged(nameof(ParentsVisibility)); }
+        }
+
+        private void SetPermissionsByRole()
+        {
+            switch (_currentUser.Role)
             {
-                _selectedMenuItemIndex = value;
-                OnPropertyChanged(nameof(SelectedMenuItemIndex));
-                OnMenuItemSelected(value);
+                case UserRole.Student:
+                case UserRole.Parent:
+                    DiaryVisibility = Visibility.Visible;
+                    break;
+                case UserRole.Teacher:
+                    JournalVisibility = Visibility.Visible;
+                    StudentsVisibility = Visibility.Visible;
+                    break;
+                case UserRole.Director:
+                    JournalVisibility = Visibility.Visible;
+                    StudentsVisibility = Visibility.Visible;
+                    TeachersVisibility = Visibility.Visible;
+                    SubjectsVisibility = Visibility.Visible;
+                    ParentsVisibility = Visibility.Visible;
+                    break;
             }
         }
 
-        public object CurrentPageContent
-        {
-            get => _currentPageContent;
-            set { _currentPageContent = value; OnPropertyChanged(nameof(CurrentPageContent)); }
-        }
+        private RelayCommand _changePageCommand;
+        public RelayCommand ChangePageCommand =>
+            _changePageCommand ?? (_changePageCommand = new RelayCommand(param => ChangePage(param?.ToString())));
 
-        public ObservableCollection<MarkLog> RecentLogs
+        private void ChangePage(string pageName)
         {
-            get => _recentLogs;
-            set { _recentLogs = value; OnPropertyChanged(nameof(RecentLogs)); }
-        }
+            if (MainFrame == null) return;
 
-        public ObservableCollection<Subject> TeacherSubjects
-        {
-            get => _teacherSubjects;
-            set { _teacherSubjects = value; OnPropertyChanged(nameof(TeacherSubjects)); }
+            // Очищаем историю навигации, чтобы не копились записи
+            while (MainFrame.CanGoBack)
+                MainFrame.RemoveBackEntry();
+
+            Page page = null;
+            switch (pageName)
+            {
+                case "DashboardPage":
+                    page = new DashboardPage();
+                    page.DataContext = new DashboardViewModel(_current_window, _currentUser);
+                    break;
+                case "DiaryPage":
+                    page = new DiaryPage();
+                    page.DataContext = new DiaryViewModel(_current_window, _currentUser);
+                    break;
+                case "JournalPage":
+                    page = new JournalPage();
+                    page.DataContext = new JournalViewModel(_current_window, _currentUser);
+                    break;
+                case "StudentsPage":
+                    page = new StudentsPage();
+                    // ViewModel добавим позже
+                    break;
+                case "TeachersPage":
+                    page = new TeachersPage();
+                    break;
+                case "SubjectsPage":
+                    page = new SubjectsPage();
+                    break;
+                case "ParentsPage":
+                    page = new ParentsPage();
+                    break;
+                default:
+                    return;
+            }
+            MainFrame.Navigate(page);
         }
 
         private RelayCommand _logoutCommand;
-        public RelayCommand LogoutCommand => _logoutCommand ?? (_logoutCommand = new RelayCommand(obj => Logout()));
+        public RelayCommand LogoutCommand =>
+            _logoutCommand ?? (_logoutCommand = new RelayCommand(obj => Logout()));
 
-        private void LoadUserData()
+        private void Logout()
         {
-            // Загружаем логи в зависимости от роли пользователя
-            if (_currentUser.Role == UserRole.Teacher)
-            {
-                var teacher = _authService.GetTeacherByUserId(_currentUser.Id);
-                if (teacher != null)
-                {
-                    var logs = _gradeService.GetTeacherMarkLogs(teacher.Id, 20);
-                    foreach (var log in logs)
-                    {
-                        RecentLogs.Add(log);
-                    }
-
-                    var subjects = _gradeService.GetTeacherSubjects(teacher.Id);
-                    foreach (var subject in subjects)
-                    {
-                        TeacherSubjects.Add(subject);
-                    }
-                }
-            }
-            else if (_currentUser.Role == UserRole.Director)
-            {
-                var logs = _gradeService.GetAllMarkLogs(50);
-                foreach (var log in logs)
-                {
-                    RecentLogs.Add(log);
-                }
-            }
-        }
-
-        private void OnMenuItemSelected(int index)
-        {
-            // Логика переключения страниц будет реализована в MainWindow
-            // Здесь можно добавить загрузку данных для выбранной страницы
+            var loginWindow = new LoginWindow();
+            loginWindow.Show();
+            _current_window.Close();
         }
 
         private string GetRoleName(UserRole role)
@@ -127,13 +182,6 @@ namespace SchoolJournal.ViewModel
                 case UserRole.Student: return "Учащийся";
                 default: return "Неизвестно";
             }
-        }
-
-        private void Logout()
-        {
-            var loginWindow = new LoginWindow();
-            loginWindow.Show();
-            _current_window.Close();
         }
     }
 }

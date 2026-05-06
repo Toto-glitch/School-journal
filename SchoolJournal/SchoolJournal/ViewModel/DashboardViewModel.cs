@@ -8,16 +8,15 @@ namespace SchoolJournal.ViewModel
 {
     public class DashboardViewModel : BaseViewModel
     {
-        private AuthService _authService;
-        private GradeService _gradeService;
-        private User _currentUser;
+        private readonly AuthService _authService;
+        private readonly GradeService _gradeService;
+        private readonly User _currentUser;
 
         private string _welcomeMessage;
-        private ObservableCollection<MarkLog> _recentLogs;
-        private ObservableCollection<Subject> _teacherSubjects;
+        private ObservableCollection<Student> _children;
+        private Student _selectedChild;
         private double _studentAverageMark;
-        private int _studentsCount;
-        private int _teachersCount;
+        private ObservableCollection<Mark> _recentMarks;
 
         public DashboardViewModel(Window win, User user) : base(win)
         {
@@ -25,8 +24,8 @@ namespace SchoolJournal.ViewModel
             _gradeService = new GradeService();
             _currentUser = user;
 
-            _recentLogs = new ObservableCollection<MarkLog>();
-            _teacherSubjects = new ObservableCollection<Subject>();
+            Children = new ObservableCollection<Student>();
+            RecentMarks = new ObservableCollection<Mark>();
 
             LoadDashboardData();
         }
@@ -37,16 +36,22 @@ namespace SchoolJournal.ViewModel
             set { _welcomeMessage = value; OnPropertyChanged(nameof(WelcomeMessage)); }
         }
 
-        public ObservableCollection<MarkLog> RecentLogs
+        public ObservableCollection<Student> Children
         {
-            get => _recentLogs;
-            set { _recentLogs = value; OnPropertyChanged(nameof(RecentLogs)); }
+            get => _children;
+            set { _children = value; OnPropertyChanged(nameof(Children)); }
         }
 
-        public ObservableCollection<Subject> TeacherSubjects
+        public Student SelectedChild
         {
-            get => _teacherSubjects;
-            set { _teacherSubjects = value; OnPropertyChanged(nameof(TeacherSubjects)); }
+            get => _selectedChild;
+            set
+            {
+                _selectedChild = value;
+                OnPropertyChanged(nameof(SelectedChild));
+                if (value != null)
+                    LoadStudentDashboard(value.Id);
+            }
         }
 
         public double StudentAverageMark
@@ -55,97 +60,47 @@ namespace SchoolJournal.ViewModel
             set { _studentAverageMark = value; OnPropertyChanged(nameof(StudentAverageMark)); }
         }
 
-        public int StudentsCount
+        public ObservableCollection<Mark> RecentMarks
         {
-            get => _studentsCount;
-            set { _studentsCount = value; OnPropertyChanged(nameof(StudentsCount)); }
+            get => _recentMarks;
+            set { _recentMarks = value; OnPropertyChanged(nameof(RecentMarks)); }
         }
 
-        public int TeachersCount
-        {
-            get => _teachersCount;
-            set { _teachersCount = value; OnPropertyChanged(nameof(TeachersCount)); }
-        }
+        public bool IsParent => _currentUser.Role == UserRole.Parent;
+        public bool IsStudent => _currentUser.Role == UserRole.Student;
 
         private void LoadDashboardData()
         {
             WelcomeMessage = $"Добро пожаловать, {_currentUser.Username}!";
 
-            switch (_currentUser.Role)
+            if (IsParent)
             {
-                case UserRole.Director:
-                    LoadDirectorDashboard();
-                    break;
-                case UserRole.Teacher:
-                    LoadTeacherDashboard();
-                    break;
-                case UserRole.Student:
-                    LoadStudentDashboard();
-                    break;
-                case UserRole.Parent:
-                    LoadParentDashboard();
-                    break;
-            }
-        }
-
-        private void LoadDirectorDashboard()
-        {
-            // Статистика школы
-            StudentsCount = _gradeService.GetAllStudents().Count;
-            TeachersCount = _gradeService.GetAllTeachers().Count;
-
-            // Последние логи всех действий
-            var logs = _gradeService.GetAllMarkLogs(20);
-            foreach (var log in logs)
-                RecentLogs.Add(log);
-        }
-
-        private void LoadTeacherDashboard()
-        {
-            var teacher = _authService.GetTeacherByUserId(_currentUser.Id);
-            if (teacher != null)
-            {
-                var subjects = _gradeService.GetTeacherSubjects(teacher.Id);
-                foreach (var subject in subjects)
-                    TeacherSubjects.Add(subject);
-
-                // Последние действия учителя
-                var logs = _gradeService.GetTeacherMarkLogs(teacher.Id, 15);
-                foreach (var log in logs)
-                    RecentLogs.Add(log);
-            }
-        }
-
-        private void LoadStudentDashboard()
-        {
-            var student = _authService.GetStudentByUserId(_currentUser.Id);
-            if (student != null)
-            {
-                StudentAverageMark = _gradeService.GetOverallAverageMark(student.Id);
-
-                // Последние оценки
-                var marks = _gradeService.GetStudentMarks(student.Id);
-                foreach (var mark in marks.Take(10))
+                var parent = _authService.GetParentByUserId(_currentUser.Id);
+                if (parent?.Students != null)
                 {
-                    RecentLogs.Add(new MarkLog
-                    {
-                        Action = $"Оценка по предмету {mark.Subject.Title}",
-                        NewValue = mark.Value,
-                        ChangeDate = mark.Date
-                    });
+                    foreach (var student in parent.Students)
+                        Children.Add(student);
+
+                    if (Children.Any())
+                        SelectedChild = Children.First();
                 }
             }
+            else if (IsStudent)
+            {
+                var student = _authService.GetStudentByUserId(_currentUser.Id);
+                if (student != null)
+                    LoadStudentDashboard(student.Id);
+            }
         }
 
-        private void LoadParentDashboard()
+        private void LoadStudentDashboard(int studentId)
         {
-            var parent = _authService.GetParentByUserId(_currentUser.Id);
-            if (parent?.Students.Any() == true)
-            {
-                var student = parent.Students.First();
-                StudentAverageMark = _gradeService.GetOverallAverageMark(student.Id);
-                WelcomeMessage = $"Дети: {string.Join(", ", parent.Students.Select(s => s.LastName + " " + s.FirstName))}";
-            }
+            RecentMarks.Clear();
+            var marks = _gradeService.GetStudentMarks(studentId).Take(10);
+            foreach (var mark in marks)
+                RecentMarks.Add(mark);
+
+            StudentAverageMark = _gradeService.GetOverallAverageMark(studentId);
         }
     }
 }

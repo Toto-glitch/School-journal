@@ -1,4 +1,5 @@
-﻿<Window x:Class="SchoolJournal.View.Windows.MainWindow"
+﻿<!-- MainWindow.xaml -->
+<Window x:Class="SchoolJournal.View.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Электронный дневник" Height="720" Width="1280"
@@ -24,40 +25,40 @@
                 <!-- Информация о пользователе -->
                 <StackPanel Grid.Row="0" Margin="0,0,0,20">
                     <TextBlock Text="👤" FontSize="48" HorizontalAlignment="Center"/>
-                    <TextBlock Text="{Binding UserName}" FontSize="16" FontWeight="Bold"
+                    <TextBlock Text="{Binding CurrentUserName}" FontSize="16" FontWeight="Bold"
                                Foreground="#4A90D9" HorizontalAlignment="Center" Margin="0,10,0,5"/>
-                    <TextBlock Text="{Binding UserRole}" FontSize="12" Foreground="#777777"
+                    <TextBlock Text="{Binding CurrentUserRole}" FontSize="12" Foreground="#777777"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Навигация -->
                 <StackPanel Grid.Row="1">
                     <Button Content="📊 Главная" Style="{StaticResource NavButton}"
-                            Command="{Binding ChangePageCommand}" CommandParameter="Dashboard"
+                            Command="{Binding ChangePageCommand}" CommandParameter="DashboardPage"
                             Visibility="{Binding DashboardVisibility}"/>
 
                     <Button Content="📖 Дневник" Style="{StaticResource NavButton}"
-                            Command="{Binding ChangePageCommand}" CommandParameter="Diary"
+                            Command="{Binding ChangePageCommand}" CommandParameter="DiaryPage"
                             Visibility="{Binding DiaryVisibility}"/>
 
                     <Button Content="📝 Журнал" Style="{StaticResource NavButton}"
-                            Command="{Binding ChangePageCommand}" CommandParameter="Journal"
+                            Command="{Binding ChangePageCommand}" CommandParameter="JournalPage"
                             Visibility="{Binding JournalVisibility}"/>
 
                     <Button Content="🎓 Ученики" Style="{StaticResource NavButton}"
-                            Command="{Binding ChangePageCommand}" CommandParameter="Students"
+                            Command="{Binding ChangePageCommand}" CommandParameter="StudentsPage"
                             Visibility="{Binding StudentsVisibility}"/>
 
                     <Button Content="👨‍🏫 Учителя" Style="{StaticResource NavButton}"
-                            Command="{Binding ChangePageCommand}" CommandParameter="Teachers"
+                            Command="{Binding ChangePageCommand}" CommandParameter="TeachersPage"
                             Visibility="{Binding TeachersVisibility}"/>
 
                     <Button Content="📚 Предметы" Style="{StaticResource NavButton}"
-                            Command="{Binding ChangePageCommand}" CommandParameter="Subjects"
+                            Command="{Binding ChangePageCommand}" CommandParameter="SubjectsPage"
                             Visibility="{Binding SubjectsVisibility}"/>
 
                     <Button Content="👪 Родители" Style="{StaticResource NavButton}"
-                            Command="{Binding ChangePageCommand}" CommandParameter="Parents"
+                            Command="{Binding ChangePageCommand}" CommandParameter="ParentsPage"
                             Visibility="{Binding ParentsVisibility}"/>
                 </StackPanel>
 
@@ -67,10 +68,11 @@
             </Grid>
         </Border>
 
-        <!-- Основная область контента -->
+        <!-- Основная область контента с Frame -->
         <Border Grid.Column="1" Background="White" Margin="10" CornerRadius="15"
                 Effect="{StaticResource CardShadow}">
-            <ContentControl Content="{Binding CurrentPageContent}"/>
+            <Frame x:Name="MainFrame" 
+                   NavigationUIVisibility="Hidden"/>
         </Border>
     </Grid>
 </Window>
