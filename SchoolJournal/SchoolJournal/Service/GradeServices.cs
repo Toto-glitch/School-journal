@@ -399,6 +399,20 @@ namespace SchoolJournal.Service
             }
         }
 
+        public void AddStudentParent(int studentId, int parentId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var student = context.Students.Include("Parents").FirstOrDefault(s => s.Id == studentId);
+                var parent = context.Parents.Find(parentId);
+                if (student != null && parent != null)
+                {
+                    student.Parents.Add(parent);
+                    context.SaveChanges();
+                }
+            }
+        }
+
         public void DeleteParent(int parentId)
         {
             using (var context = new ApplicationContext())

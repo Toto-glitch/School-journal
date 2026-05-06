@@ -14,7 +14,7 @@ namespace SchoolJournal.ViewModel
         private Teacher _selectedTeacher;
         private bool _isDirector;
 
-        // Поля для добавления/редактирования
+        // Поля формы
         private string _lastName;
         private string _firstName;
         private string _fatherName;
@@ -23,7 +23,7 @@ namespace SchoolJournal.ViewModel
         private string _email;
         private string _phoneNumber;
         private bool _isEditing;
-        private bool _isAddDialogOpen;
+        private bool _isDialogOpen;
 
         public TeachersManagementViewModel(Window win, User currentUser) : base(win)
         {
@@ -47,48 +47,13 @@ namespace SchoolJournal.ViewModel
 
         public bool IsDirector => _isDirector;
 
-        // Свойства для формы
-        public string LastName
-        {
-            get => _lastName;
-            set { _lastName = value; OnPropertyChanged(); }
-        }
-
-        public string FirstName
-        {
-            get => _firstName;
-            set { _firstName = value; OnPropertyChanged(); }
-        }
-
-        public string FatherName
-        {
-            get => _fatherName;
-            set { _fatherName = value; OnPropertyChanged(); }
-        }
-
-        public string Username
-        {
-            get => _username;
-            set { _username = value; OnPropertyChanged(); }
-        }
-
-        public string Password
-        {
-            get => _password;
-            set { _password = value; OnPropertyChanged(); }
-        }
-
-        public string Email
-        {
-            get => _email;
-            set { _email = value; OnPropertyChanged(); }
-        }
-
-        public string PhoneNumber
-        {
-            get => _phoneNumber;
-            set { _phoneNumber = value; OnPropertyChanged(); }
-        }
+        public string LastName { get => _lastName; set { _lastName = value; OnPropertyChanged(); } }
+        public string FirstName { get => _firstName; set { _firstName = value; OnPropertyChanged(); } }
+        public string FatherName { get => _fatherName; set { _fatherName = value; OnPropertyChanged(); } }
+        public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
+        public string Password { get => _password; set { _password = value; OnPropertyChanged(); } }
+        public string Email { get => _email; set { _email = value; OnPropertyChanged(); } }
+        public string PhoneNumber { get => _phoneNumber; set { _phoneNumber = value; OnPropertyChanged(); } }
 
         public bool IsEditing
         {
@@ -96,10 +61,10 @@ namespace SchoolJournal.ViewModel
             set { _isEditing = value; OnPropertyChanged(); }
         }
 
-        public bool IsAddDialogOpen
+        public bool IsDialogOpen
         {
-            get => _isAddDialogOpen;
-            set { _isAddDialogOpen = value; OnPropertyChanged(); }
+            get => _isDialogOpen;
+            set { _isDialogOpen = value; OnPropertyChanged(); }
         }
 
         private void LoadTeachers()
@@ -110,53 +75,26 @@ namespace SchoolJournal.ViewModel
                 Teachers.Add(t);
         }
 
+        // ========== Команда открытия диалога для добавления ==========
         private RelayCommand _addTeacherCommand;
         public RelayCommand AddTeacherCommand => _addTeacherCommand ?? (_addTeacherCommand = new RelayCommand(
-            obj => AddTeacher(),
+            obj => OpenAddDialog(),
             obj => _isDirector));
 
-        private void AddTeacher()
+        private void OpenAddDialog()
         {
-            if (string.IsNullOrWhiteSpace(LastName) || string.IsNullOrWhiteSpace(FirstName))
-            {
-                MessageBox.Show("Фамилия и имя обязательны!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            try
-            {
-                // Создаём пользователя
-                var user = new User
-                {
-                    Username = Username ?? $"{LastName}_{FirstName}",
-                    PasswordHash = HashPassword(Password ?? "default123"),
-                    Email = Email ?? "",
-                    PhoneNumber = PhoneNumber ?? "",
-                    Role = UserRole.Teacher
-                };
-                _gradeService.AddUser(user);
-
-                // Создаём учителя
-                var teacher = new Teacher
-                {
-                    LastName = LastName,
-                    FirstName = FirstName,
-                    FatherName = FatherName ?? "",
-                    UserId = user.Id
-                };
-                _gradeService.AddTeacher(teacher);
-
-                LoadTeachers();
-                ClearForm();
-                IsAddDialogOpen = false;
-                MessageBox.Show("Учитель успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при добавлении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            LastName = "";
+            FirstName = "";
+            FatherName = "";
+            Username = "";
+            Password = "";
+            Email = "";
+            PhoneNumber = "";
+            IsEditing = false;
+            IsDialogOpen = true;
         }
 
+        // ========== Команда редактирования ==========
         private RelayCommand _editTeacherCommand;
         public RelayCommand EditTeacherCommand => _editTeacherCommand ?? (_editTeacherCommand = new RelayCommand(
             obj => StartEdit(),
@@ -176,51 +114,80 @@ namespace SchoolJournal.ViewModel
                 Email = SelectedTeacher.User.Email;
                 PhoneNumber = SelectedTeacher.User.PhoneNumber;
             }
+            Password = ""; // пароль при редактировании не показываем
 
             IsEditing = true;
-            IsAddDialogOpen = true;
+            IsDialogOpen = true;
         }
 
-        private RelayCommand _saveEditCommand;
-        public RelayCommand SaveEditCommand => _saveEditCommand ?? (_saveEditCommand = new RelayCommand(
-            obj => SaveEdit(),
-            obj => _isDirector && IsEditing));
+        // ========== Команда сохранения (добавление или обновление) ==========
+        private RelayCommand _saveCommand;
+        public RelayCommand SaveCommand => _saveCommand ?? (_saveCommand = new RelayCommand(
+            obj => Save(),
+            obj => _isDirector));
 
-        private void SaveEdit()
+        private void Save()
         {
-            if (SelectedTeacher == null) return;
+            if (string.IsNullOrWhiteSpace(LastName) || string.IsNullOrWhiteSpace(FirstName))
+            {
+                MessageBox.Show("Фамилия и имя обязательны!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             try
             {
-                // Обновляем учителя
-                SelectedTeacher.LastName = LastName;
-                SelectedTeacher.FirstName = FirstName;
-                SelectedTeacher.FatherName = FatherName ?? "";
-                _gradeService.UpdateTeacher(SelectedTeacher);
-
-                // Обновляем пользователя
-                if (SelectedTeacher.User != null)
+                if (IsEditing && SelectedTeacher != null)
                 {
-                    SelectedTeacher.User.Username = Username;
-                    SelectedTeacher.User.Email = Email;
-                    SelectedTeacher.User.PhoneNumber = PhoneNumber;
-                    if (!string.IsNullOrWhiteSpace(Password))
-                        SelectedTeacher.User.PasswordHash = HashPassword(Password);
-                    _gradeService.UpdateUser(SelectedTeacher.User);
+                    // Обновление
+                    SelectedTeacher.LastName = LastName;
+                    SelectedTeacher.FirstName = FirstName;
+                    SelectedTeacher.FatherName = FatherName;
+                    _gradeService.UpdateTeacher(SelectedTeacher);
+
+                    if (SelectedTeacher.User != null)
+                    {
+                        SelectedTeacher.User.Username = Username;
+                        SelectedTeacher.User.Email = Email;
+                        SelectedTeacher.User.PhoneNumber = PhoneNumber;
+                        if (!string.IsNullOrWhiteSpace(Password))
+                            SelectedTeacher.User.PasswordHash = HashPassword(Password);
+                        _gradeService.UpdateUser(SelectedTeacher.User);
+                    }
+                }
+                else
+                {
+                    // Добавление
+                    var user = new User
+                    {
+                        Username = string.IsNullOrWhiteSpace(Username) ? $"{LastName}_{FirstName}" : Username,
+                        PasswordHash = HashPassword(string.IsNullOrWhiteSpace(Password) ? "default123" : Password),
+                        Email = Email ?? "",
+                        PhoneNumber = PhoneNumber ?? "",
+                        Role = UserRole.Teacher
+                    };
+                    _gradeService.AddUser(user);
+
+                    var teacher = new Teacher
+                    {
+                        LastName = LastName,
+                        FirstName = FirstName,
+                        FatherName = FatherName,
+                        UserId = user.Id
+                    };
+                    _gradeService.AddTeacher(teacher);
                 }
 
                 LoadTeachers();
-                ClearForm();
-                IsEditing = false;
-                IsAddDialogOpen = false;
-                MessageBox.Show("Данные учителя обновлены!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                IsDialogOpen = false;
+                MessageBox.Show("Данные сохранены!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        // ========== Команда удаления ==========
         private RelayCommand _deleteTeacherCommand;
         public RelayCommand DeleteTeacherCommand => _deleteTeacherCommand ?? (_deleteTeacherCommand = new RelayCommand(
             obj => DeleteTeacher(),
@@ -232,19 +199,18 @@ namespace SchoolJournal.ViewModel
 
             var result = MessageBox.Show(
                 $"Вы уверены, что хотите удалить учителя {SelectedTeacher.LastName} {SelectedTeacher.FirstName}?",
-                "Подтверждение",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    int userId = SelectedTeacher.UserId;
+                    // Используем безопасный метод удаления
                     _gradeService.DeleteTeacher(SelectedTeacher.Id);
-                    _gradeService.DeleteUser(userId);
+                    if (SelectedTeacher.User != null)
+                        _gradeService.DeleteUser(SelectedTeacher.User.Id);
                     LoadTeachers();
-                    MessageBox.Show("Учитель удалён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Учитель удалён.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
@@ -253,25 +219,10 @@ namespace SchoolJournal.ViewModel
             }
         }
 
+        // ========== Отмена ==========
         private RelayCommand _cancelCommand;
         public RelayCommand CancelCommand => _cancelCommand ?? (_cancelCommand = new RelayCommand(
-            obj =>
-            {
-                ClearForm();
-                IsEditing = false;
-                IsAddDialogOpen = false;
-            }));
-
-        private void ClearForm()
-        {
-            LastName = "";
-            FirstName = "";
-            FatherName = "";
-            Username = "";
-            Password = "";
-            Email = "";
-            PhoneNumber = "";
-        }
+            obj => { IsDialogOpen = false; }));
 
         private string HashPassword(string password)
         {

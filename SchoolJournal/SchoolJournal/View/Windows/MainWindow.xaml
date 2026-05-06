@@ -60,6 +60,10 @@
                     <Button Content="👪 Родители" Style="{StaticResource NavButton}"
                             Command="{Binding ChangePageCommand}" CommandParameter="ParentsPage"
                             Visibility="{Binding ParentsVisibility}"/>
+                    <Button Content="👥 Группы" Style="{StaticResource NavButton}"
+                            Command="{Binding ChangePageCommand}" CommandParameter="GroupsPage"
+                            Visibility="{Binding GroupsVisibility}"/>
+                    
                 </StackPanel>
 
                 <!-- Кнопка выхода -->

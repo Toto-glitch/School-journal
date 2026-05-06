@@ -13,6 +13,9 @@ namespace SchoolJournal.Model
         [Required][MaxLength(255)] public string FirstName { get; set; }
         [MaxLength(255)] public string FatherName { get; set; }
 
+        [NotMapped]
+        public string FullName => $"{LastName} {FirstName}";
+
         public int UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual User User { get; set; }

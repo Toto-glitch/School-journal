@@ -93,6 +93,13 @@ namespace SchoolJournal.ViewModel
             set { _parentsVisibility = value; OnPropertyChanged(nameof(ParentsVisibility)); }
         }
 
+        private Visibility _groupsVisibility = Visibility.Collapsed;
+        public Visibility GroupsVisibility
+        {
+            get => _groupsVisibility;
+            set { _groupsVisibility = value; OnPropertyChanged(); }
+        }
+
         private void SetPermissionsByRole()
         {
             switch (_currentUser.Role)
@@ -113,6 +120,7 @@ namespace SchoolJournal.ViewModel
                     TeachersVisibility = Visibility.Visible;
                     SubjectsVisibility = Visibility.Visible;
                     ParentsVisibility = Visibility.Visible;
+                    GroupsVisibility = Visibility.Visible;
                     break;
             }
         }
@@ -156,6 +164,9 @@ namespace SchoolJournal.ViewModel
                 case "StudentsPage":
                     page = new StudentsPage();
                     page.DataContext = new StudentsManagementViewModel(_current_window, _currentUser);
+                    break;
+                case "GroupsPage":
+                    page = new GroupsPage(_currentUser);
                     break;
                 default:
                     return;
