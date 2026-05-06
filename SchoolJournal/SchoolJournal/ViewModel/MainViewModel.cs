@@ -106,6 +106,8 @@ namespace SchoolJournal.ViewModel
                     StudentsVisibility = Visibility.Visible;
                     break;
                 case UserRole.Director:
+                    DashboardVisibility = Visibility.Visible;
+                    DiaryVisibility = Visibility.Visible;
                     JournalVisibility = Visibility.Visible;
                     StudentsVisibility = Visibility.Visible;
                     TeachersVisibility = Visibility.Visible;
@@ -143,7 +145,7 @@ namespace SchoolJournal.ViewModel
                     page.DataContext = new JournalViewModel(_current_window, _currentUser);
                     break;
                 case "TeachersPage":
-                    page = new TeachersPage();
+                    page = new TeachersPage(_currentUser);
                     break;
                 case "SubjectsPage":
                     page = new SubjectsPage();
@@ -153,7 +155,7 @@ namespace SchoolJournal.ViewModel
                     break;
                 case "StudentsPage":
                     page = new StudentsPage();
-                    page.DataContext = new StudentsViewModel(_current_window, _currentUser);
+                    page.DataContext = new StudentsManagementViewModel(_current_window, _currentUser);
                     break;
                 default:
                     return;

@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows.Controls;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using SchoolJournal.Model;
+using SchoolJournal.ViewModel;
 
 namespace SchoolJournal.View.Pages
 {
@@ -20,9 +10,10 @@ namespace SchoolJournal.View.Pages
     /// </summary>
     public partial class TeachersPage : Page
     {
-        public TeachersPage()
+        public TeachersPage(User currentUser)
         {
             InitializeComponent();
+            DataContext = new TeachersManagementViewModel(Application.Current.MainWindow, currentUser);
         }
     }
 }

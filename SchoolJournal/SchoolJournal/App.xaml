@@ -11,6 +11,8 @@
 
             <local:IntToIndexConverter x:Key="IntToIndexConverter"/>
             <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <local:BoolToStringConverter x:Key="BoolToStringConverter"/>
+            <local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
