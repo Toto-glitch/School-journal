@@ -1,12 +1,12 @@
 ﻿using SchoolJournal.Service;
-using SchoolJournal.Services;
+using SchoolJournal.View.Windows;
 using System.Windows;
 
 namespace SchoolJournal.ViewModel
 {
     public class LoginViewModel : BaseViewModel
     {
-        private Services.AuthService _authService;
+        private AuthService _authService;
 
         private string _username;
         private string _password;
