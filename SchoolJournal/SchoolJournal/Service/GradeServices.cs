@@ -51,9 +51,6 @@ namespace SchoolJournal.Service
                 int oldValue = mark.Value;
                 mark.Value = newValue;
 
-                context.SaveChanges();
-
-                // Логирование действия
                 var log = new MarkLog
                 {
                     MarkId = markId,
@@ -271,7 +268,14 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
-                context.Entry(student).State = EntityState.Modified;
+                var existStudent = context.Students.FirstOrDefault(s => s.Id == student.Id);
+                if (existStudent == null)
+                    throw new Exception("Ученик не найден");
+
+                existStudent.LastName = student.LastName;
+                existStudent.FirstName = student.FirstName;
+                existStudent.FatherName = student.FatherName;
+                existStudent.GroupId = student.GroupId;
                 context.SaveChanges();
             }
         }
@@ -280,12 +284,12 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
+                var marks = context.Marks.Where(m => m.StudentId == studentId).ToList();
+                context.Marks.RemoveRange(marks);
                 var student = context.Students.FirstOrDefault(s => s.Id == studentId);
                 if (student != null)
-                {
                     context.Students.Remove(student);
-                    context.SaveChanges();
-                }
+                context.SaveChanges();
             }
         }
 
@@ -302,7 +306,14 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
-                context.Entry(teacher).State = EntityState.Modified;
+                var t = context.Teachers.FirstOrDefault(x => x.Id == teacher.Id);
+                if (t == null)
+                    throw new Exception("Учитель не найден");
+
+                t.LastName = teacher.LastName;
+                t.FirstName = teacher.FirstName;
+                t.FatherName = teacher.FatherName;
+                // UserId не меняем, при необходимости сделать отдельно
                 context.SaveChanges();
             }
         }
@@ -311,12 +322,21 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
-                var teacher = context.Teachers.FirstOrDefault(t => t.Id == teacherId);
+                var marks = context.Marks.Where(m => m.TeacherId == teacherId).ToList();
+                var markIds = marks.Select(m => m.Id).ToList();
+                var logs = context.MarkLogs.Where(ml => markIds.Contains(ml.MarkId)).ToList();
+                context.MarkLogs.RemoveRange(logs);
+                context.Marks.RemoveRange(marks);
+                var teacher = context.Teachers
+                    .Include(t => t.Subjects)  
+                    .FirstOrDefault(t => t.Id == teacherId);
+
                 if (teacher != null)
                 {
+                    teacher.Subjects.Clear();
                     context.Teachers.Remove(teacher);
-                    context.SaveChanges();
                 }
+                context.SaveChanges();
             }
         }
 
@@ -333,7 +353,11 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
-                context.Entry(subject).State = EntityState.Modified;
+                var s = context.Subjects.FirstOrDefault(x => x.Id == subject.Id);
+                if (s == null)
+                    throw new Exception("Предмет не найден");
+
+                s.Title = subject.Title;
                 context.SaveChanges();
             }
         }
@@ -364,7 +388,13 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
-                context.Entry(parent).State = EntityState.Modified;
+                var p = context.Parents.FirstOrDefault(x => x.Id == parent.Id);
+                if (p == null)
+                    throw new Exception("Родитель не найден");
+
+                p.LastName = parent.LastName;
+                p.FirstName = parent.FirstName;
+                p.FatherName = parent.FatherName;
                 context.SaveChanges();
             }
         }
@@ -395,7 +425,17 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
-                context.Entry(user).State = EntityState.Modified;
+                var u = context.Users.FirstOrDefault(x => x.Id == user.Id);
+                if (u == null)
+                    throw new Exception("Пользователь не найден");
+
+                u.Username = user.Username;
+                u.Email = user.Email;
+                u.PhoneNumber = user.PhoneNumber;
+                // Если пароль передан (не пустой), обновляем хеш
+                if (!string.IsNullOrWhiteSpace(user.PasswordHash))
+                    u.PasswordHash = user.PasswordHash;
+                // Роль обычно не меняется через этот метод
                 context.SaveChanges();
             }
         }
@@ -426,7 +466,11 @@ namespace SchoolJournal.Service
         {
             using (var context = new ApplicationContext())
             {
-                context.Entry(group).State = EntityState.Modified;
+                var g = context.Groups.FirstOrDefault(x => x.Id == group.Id);
+                if (g == null)
+                    throw new Exception("Группа не найдена");
+
+                g.Title = group.Title;
                 context.SaveChanges();
             }
         }

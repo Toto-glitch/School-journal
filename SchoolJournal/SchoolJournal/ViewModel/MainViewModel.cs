@@ -148,10 +148,10 @@ namespace SchoolJournal.ViewModel
                     page = new TeachersPage(_currentUser);
                     break;
                 case "SubjectsPage":
-                    page = new SubjectsPage();
+                    page = new SubjectsPage(_currentUser);
                     break;
                 case "ParentsPage":
-                    page = new ParentsPage();
+                    page = new ParentsPage(_currentUser);
                     break;
                 case "StudentsPage":
                     page = new StudentsPage();
