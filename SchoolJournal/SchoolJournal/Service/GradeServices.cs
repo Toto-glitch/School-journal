@@ -81,20 +81,6 @@ namespace SchoolJournal.Service
 
                 context.Marks.Remove(mark);
                 context.SaveChanges();
-
-                // Логирование действия
-                var log = new MarkLog
-                {
-                    MarkId = markId,
-                    OldValue = oldValue,
-                    NewValue = 0,
-                    ChangeDate = DateTime.Now,
-                    UserId = teacherId,
-                    Action = "Удаление оценки"
-                };
-
-                context.MarkLogs.Add(log);
-                context.SaveChanges();
             }
         }
 

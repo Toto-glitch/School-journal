@@ -1,5 +1,6 @@
 ﻿using SchoolJournal.Model;
 using SchoolJournal.Service;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -17,6 +18,8 @@ namespace SchoolJournal.ViewModel
         private Student _selectedChild;
         private double _studentAverageMark;
         private ObservableCollection<Mark> _recentMarks;
+        private ObservableCollection<Subject> _teacherSubjects;
+        private ObservableCollection<SubjectAverage> _subjectAverages;   // новое
 
         public DashboardViewModel(Window win, User user) : base(win)
         {
@@ -26,6 +29,8 @@ namespace SchoolJournal.ViewModel
 
             Children = new ObservableCollection<Student>();
             RecentMarks = new ObservableCollection<Mark>();
+            TeacherSubjects = new ObservableCollection<Subject>();
+            SubjectAverages = new ObservableCollection<SubjectAverage>(); // инициализация
 
             LoadDashboardData();
         }
@@ -66,8 +71,22 @@ namespace SchoolJournal.ViewModel
             set { _recentMarks = value; OnPropertyChanged(nameof(RecentMarks)); }
         }
 
+        public ObservableCollection<Subject> TeacherSubjects
+        {
+            get => _teacherSubjects;
+            set { _teacherSubjects = value; OnPropertyChanged(nameof(TeacherSubjects)); }
+        }
+
+        public ObservableCollection<SubjectAverage> SubjectAverages
+        {
+            get => _subjectAverages;
+            set { _subjectAverages = value; OnPropertyChanged(nameof(SubjectAverages)); }
+        }
+
         public bool IsParent => _currentUser.Role == UserRole.Parent;
         public bool IsStudent => _currentUser.Role == UserRole.Student;
+        public bool IsTeacher => _currentUser.Role == UserRole.Teacher;
+        public bool IsStudentOrParent => IsStudent || IsParent;   // для показа блоков
 
         private void LoadDashboardData()
         {
@@ -91,16 +110,50 @@ namespace SchoolJournal.ViewModel
                 if (student != null)
                     LoadStudentDashboard(student.Id);
             }
+            else if (IsTeacher)
+            {
+                var teacher = _authService.GetTeacherByUserId(_currentUser.Id);
+                if (teacher?.Subjects != null)
+                {
+                    TeacherSubjects.Clear();
+                    foreach (var subj in teacher.Subjects.OrderBy(s => s.Title))
+                        TeacherSubjects.Add(subj);
+                }
+            }
         }
 
         private void LoadStudentDashboard(int studentId)
         {
+            // Последние 10 оценок
+            var marks = _gradeService.GetStudentMarks(studentId);
             RecentMarks.Clear();
-            var marks = _gradeService.GetStudentMarks(studentId).Take(10);
-            foreach (var mark in marks)
-                RecentMarks.Add(mark);
+            foreach (var m in marks.Take(10))
+                RecentMarks.Add(m);
 
+            // Общий средний балл
             StudentAverageMark = _gradeService.GetOverallAverageMark(studentId);
+
+            // Средние баллы по предметам
+            var subjectAvgs = marks
+                .GroupBy(m => m.Subject)
+                .Select(g => new SubjectAverage
+                {
+                    Title = g.Key.Title,
+                    Average = Math.Round(g.Average(m => m.Value), 2)
+                })
+                .OrderBy(s => s.Title)
+                .ToList();
+
+            SubjectAverages.Clear();
+            foreach (var sa in subjectAvgs)
+                SubjectAverages.Add(sa);
         }
+    }
+
+    // Вспомогательный класс для отображения
+    public class SubjectAverage
+    {
+        public string Title { get; set; }
+        public double Average { get; set; }
     }
 }

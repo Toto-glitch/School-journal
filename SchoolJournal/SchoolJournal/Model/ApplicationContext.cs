@@ -6,7 +6,7 @@ namespace SchoolJournal.Model
     {
         public ApplicationContext() : base("school_journal")
         {
-            Database.SetInitializer(new CreateDatabaseIfNotExists<ApplicationContext>());
+            Database.SetInitializer(new DatabaseInitializer());
         }
 
         public DbSet<User> Users { get; set; }

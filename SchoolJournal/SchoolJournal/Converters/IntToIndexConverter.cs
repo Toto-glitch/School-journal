@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace SchoolJournal.Service
+namespace SchoolJournal.Converters
 {
     public class IntToIndexConverter : IValueConverter
     {
